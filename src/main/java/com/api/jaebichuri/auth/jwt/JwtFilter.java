@@ -25,7 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
     // permitAll의 의미는 필터를 거치지 않는 것이 아니라,
     // 필터를 모두 거치고 나서 SecurityContext에 Authentication이 없더라도 인가해주는 것임.
     private static final List<String> EXCLUDE_URLS = List.of(
-        "/favicon.ico", "/oauth2/kakao/url", "/oauth2/kakao/code"
+        "/favicon.ico", "/oauth2/kakao", "/oauth2/kakao/code"
     );
 
     public static final String HEADER_ATTRIBUTE_NAME_AUTHORIZATION = "Authorization";
