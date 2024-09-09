@@ -32,3 +32,17 @@ springdoc:
     operations-sorter: method
   cache:
     disabled: true
+
+api:
+  service-key: secret key
+  type: json
+  prone-area:
+    base-url: https://apis.data.go.kr/B552061/frequentzoneLg/getRestFrequentzoneLg
+    search-year: 2022
+    number-of-rows: 50
+    number-of-page: 1
+
+  district-code:
+    base-url: https://apis.data.go.kr/1741000/StanReginCd/getStanReginCdList
+    number-of-page: 1
+    number-of-rows: 1
