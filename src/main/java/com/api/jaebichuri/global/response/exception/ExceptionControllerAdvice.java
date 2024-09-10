@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -81,5 +82,12 @@ public class ExceptionControllerAdvice {
 
         return ResponseEntity.status(errorStatus.getHttpStatus()).body(ApiResponse.onFailure(
             errorStatus.getCode(), errorStatus.getMessage(), null));
+    }
+
+    @ExceptionHandler(ServletRequestBindingException.class)
+    public ResponseEntity<ApiResponse<Object>> handleServletRequestBindingException(ServletRequestBindingException e) {
+        ErrorStatus errorStatus = ErrorStatus._TOKEN_MISMATCH;
+        return ResponseEntity.status(errorStatus.getHttpStatus()).body(ApiResponse.onFailure(
+            errorStatus.getCode(), errorStatus.getMessage(), e.getMessage()));
     }
 }

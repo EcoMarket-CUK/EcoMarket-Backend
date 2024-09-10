@@ -1,6 +1,6 @@
 package com.api.jaebichuri.member.service;
 
-import com.api.jaebichuri.auth.dto.LoginResponseDto;
+import com.api.jaebichuri.auth.dto.TokenResponseDto;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.enums.Role;
 import com.api.jaebichuri.member.repository.MemberRepository;
@@ -23,19 +23,24 @@ public class MemberService {
     private final JwtUtil jwtUtil;
 
     @Transactional
-    public LoginResponseDto successSocialLogin(Map<String, String> memberInfo) {
+    public TokenResponseDto successSocialLogin(Map<String, String> memberInfo) {
         String clientId = memberInfo.get(JSON_ATTRIBUTE_NAME_ID);
         String nickname = memberInfo.get(JSON_ATTRIBUTE_NAME_NICKNAME);
+        String accessToken = jwtUtil.generateAccessToken(clientId);
+        String refreshToken = jwtUtil.generateRefreshToken(clientId);
 
         Optional<Member> findMember = memberRepository.findByClientId(clientId);
+
         if (findMember.isPresent()) {
             // 최초 로그인이 아닌 사용자의 경우 카카오에서 사용하는 닉네임을 변경했을 가능성이 있기 때문에 로그인 시 업데이트 해준다.
             Member member = findMember.get();
             member.updateNickname(nickname);
+            member.saveRefreshToken(refreshToken);
 
             // jwt 엑세스 토큰 응답
-            return LoginResponseDto.builder()
-                .accessToken(jwtUtil.generateAccessToken(clientId))
+            return TokenResponseDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
         }
 
@@ -44,12 +49,15 @@ public class MemberService {
             .clientId(clientId)
             .nickname(nickname)
             .role(Role.USER)
+            .refreshToken(refreshToken)
             .build();
+
         memberRepository.save(member);
 
         // jwt 엑세스 토큰 응답
-        return LoginResponseDto.builder()
-            .accessToken(jwtUtil.generateAccessToken(clientId))
+        return TokenResponseDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
             .build();
     }
 }

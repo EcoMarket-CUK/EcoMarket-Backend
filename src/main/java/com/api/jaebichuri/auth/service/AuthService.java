@@ -1,5 +1,11 @@
 package com.api.jaebichuri.auth.service;
 
+import com.api.jaebichuri.auth.dto.TokenResponseDto;
+import com.api.jaebichuri.auth.jwt.JwtUtil;
+import com.api.jaebichuri.global.response.code.status.ErrorStatus;
+import com.api.jaebichuri.global.response.exception.CustomException;
+import com.api.jaebichuri.member.entity.Member;
+import com.api.jaebichuri.member.repository.MemberRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,6 +19,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -57,6 +64,9 @@ public class AuthService {
     @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String USER_INFO_URI;
 
+    private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
+
     public String getRedirectUrl() {
         String url = UriComponentsBuilder.fromHttpUrl(AUTHORIZATION_URI)
             .queryParam(QUERY_PARAMETER_NAME_CLIENT_ID, KAKAO_CLIENT_ID)
@@ -93,6 +103,36 @@ public class AuthService {
         log.info("로그인 사용자 정보 : {}", memberInfoResponse);
 
         return getClientId(memberInfoResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public TokenResponseDto reissue(String refreshToken) {
+        String clientId = jwtUtil.extractClientId(refreshToken);
+        String accessToken = jwtUtil.generateAccessToken(clientId);
+
+        // 검증
+        checkMemberRefreshToken(clientId, refreshToken);
+
+        // 검증 성공 시 accessToken 재발급 + refreshToken은 원래 토큰 전달
+        return TokenResponseDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
+
+    private void checkMemberRefreshToken(String clientId, String refreshToken) {
+        Member member = memberRepository.findByClientId(clientId).orElseThrow(
+            () -> new CustomException(ErrorStatus._MEMBER_NOT_FOUND));
+
+        // 멤버에 refreshtoken이 없다면? -> 로그아웃하면 디비에서 refreshToken value 지움
+        if (member.getRefreshToken().isEmpty()) {
+            throw new CustomException(ErrorStatus._MEMBER_TOKEN_NOT_FOUND);
+        }
+
+        // 멤버의 리프레시 토큰 값과 전달 받은 리프레시 토큰 값이 다른 경우 (이런 경우가 발생할 일은 없음)
+        if (!refreshToken.equals(member.getRefreshToken())) {
+            throw new CustomException(ErrorStatus._MEMBER_TOKEN_MISMATCH);
+        }
     }
 
     private HttpEntity<MultiValueMap<String, String>> generateTokenRequest(String code) {

@@ -1,6 +1,9 @@
 package com.api.jaebichuri.auth.jwt;
 
 import com.api.jaebichuri.auth.entity.CustomUserDetails;
+import com.api.jaebichuri.auth.enums.TokenType;
+import com.api.jaebichuri.global.response.code.status.ErrorStatus;
+import com.api.jaebichuri.global.response.exception.CustomException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,8 +31,12 @@ public class JwtFilter extends OncePerRequestFilter {
         "/favicon.ico", "/oauth2/kakao", "/oauth2/kakao/code"
     );
 
+    private static final List<String> REFRESH_URLS = List.of("/oauth2/kakao/reissue");
+
     public static final String HEADER_ATTRIBUTE_NAME_AUTHORIZATION = "Authorization";
     public final static String TOKEN_PREFIX = "Bearer ";
+    private static final String REQUEST_ATTRIBUTE_NAME_REFRESH = "refresh";
+
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
@@ -71,6 +78,16 @@ public class JwtFilter extends OncePerRequestFilter {
             return;
         }
 
+        // refresh token이지만, 토큰 재발급 요청 엔드포인트가 아닌 경우 예외 처리
+        if (jwtUtil.extractTokenType(jwt).equals(TokenType.REFRESH.toString())) {
+            if (isNotAllowRefresh(request)) {
+                log.info("리프레시 토큰이지만, 엔드포인트가 reissue가 아닌 경우");
+                request.setAttribute("exception", new CustomException(ErrorStatus._TOKEN_MISMATCH));
+            }
+            // reissue 엔드포인트라면 Request Attributes에 refresh token 값 추가. 컨트롤러에서 꺼내서 사용
+            request.setAttribute(REQUEST_ATTRIBUTE_NAME_REFRESH, jwt);
+        }
+
         CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
 
         // 사용자 정보와 권한을 설정하고 SecurityContext에 인증 정보를 저장
@@ -96,4 +113,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private boolean shouldExclude(HttpServletRequest request) {
         return EXCLUDE_URLS.stream().anyMatch(url -> request.getRequestURI().equals(url));
     }
+
+    private boolean isNotAllowRefresh(HttpServletRequest request) {
+        return REFRESH_URLS.stream().noneMatch(url -> request.getRequestURI().equals(url));
+    }
+
 }

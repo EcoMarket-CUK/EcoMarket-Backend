@@ -1,7 +1,8 @@
 package com.api.jaebichuri.auth.controller;
 
-import com.api.jaebichuri.auth.dto.LoginResponseDto;
+import com.api.jaebichuri.auth.dto.TokenResponseDto;
 import com.api.jaebichuri.auth.service.AuthService;
+import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.Map;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,9 +41,17 @@ public class AuthController {
      * 3. 카카오 측에서 여기 핸들러로 리다이렉트해준다.
      */
     @GetMapping("/code")
-    public ResponseEntity<LoginResponseDto> callBack(@RequestParam(required = false) String code)
+    public ResponseEntity<TokenResponseDto> callBack(@RequestParam(required = false) String code)
         throws JsonProcessingException {
         Map<String, String> memberInfo = authService.getMemberInfo(code);
         return ResponseEntity.ok(memberService.successSocialLogin(memberInfo));
+    }
+
+    @GetMapping("/reissue")
+    ResponseEntity<ApiResponse<TokenResponseDto>> reissue(
+        @RequestAttribute("refresh") String refreshToken
+    ) {
+
+        return ResponseEntity.ok(ApiResponse.onSuccess(authService.reissue(refreshToken)));
     }
 }

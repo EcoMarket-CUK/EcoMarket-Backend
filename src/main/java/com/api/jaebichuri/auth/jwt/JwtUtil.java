@@ -81,4 +81,10 @@ public class JwtUtil {
             .parseClaimsJws(token)
             .getBody();
     }
+
+
+    // 토큰 타입 추출
+    public String extractTokenType(String token) {
+        return extractClaim(token, claims -> claims.get(TOKEN_TYPE_CLAIM_NAME, String.class));
+    }
 }
