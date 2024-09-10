@@ -36,7 +36,9 @@ public class AuthController {
     }
 
     /**
-     * 1. /oauth2/kakao/url 로 요청하면 리다이렉트 주소를 반환해주고 2. 해당 주소로 가서 로그인하면 3. 카카오 측에서 여기 핸들러로 리다이렉트해준다.
+     * 1. /oauth2/kakao/url 로 요청하면 리다이렉트 주소를 반환해주고
+     * 2. 해당 주소로 가서 로그인하면
+     * 3. 카카오 측에서 여기 핸들러로 리다이렉트해준다.
      */
     @GetMapping("/code")
     public ResponseEntity<ApiResponse<TokenResponseDto>> callBack(
