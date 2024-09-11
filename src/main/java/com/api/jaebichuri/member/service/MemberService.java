@@ -1,6 +1,8 @@
 package com.api.jaebichuri.member.service;
 
 import com.api.jaebichuri.auth.dto.TokenResponseDto;
+import com.api.jaebichuri.global.response.code.status.ErrorStatus;
+import com.api.jaebichuri.global.response.exception.CustomException;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.enums.Role;
 import com.api.jaebichuri.member.repository.MemberRepository;
@@ -60,4 +62,47 @@ public class MemberService {
             .refreshToken(refreshToken)
             .build();
     }
+
+    public TokenResponseDto reissue(String refreshToken) {
+        String clientId = jwtUtil.extractClientId(refreshToken);
+        String accessToken = jwtUtil.generateAccessToken(clientId);
+
+        // 검증
+        checkMemberRefreshToken(clientId, refreshToken);
+
+        // 검증 성공 시 accessToken 재발급 + refreshToken은 원래 토큰 전달
+        return TokenResponseDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
+
+    @Transactional
+    public void deleteRefreshToken(Member member) {
+        if (member.getRefreshToken() == null) {
+            throw new CustomException(ErrorStatus._MEMBER_ALREADY_LOGOUT);
+        }
+
+        // refreshToken 값 null로 업데이트, 논리적 삭제
+        member.deleteRefreshToken();
+
+        //member는 준영속 상태이기 때문에 영속화 시킨다.(save = persist) -> 변경 감지로 update
+        memberRepository.save(member);
+    }
+
+    private void checkMemberRefreshToken(String clientId, String refreshToken) {
+        Member member = memberRepository.findByClientId(clientId).orElseThrow(
+            () -> new CustomException(ErrorStatus._MEMBER_NOT_FOUND));
+
+        // 멤버에 refreshtoken이 없다면? -> 로그아웃하면 디비에서 refreshToken value 지움
+        if (member.getRefreshToken().isEmpty()) {
+            throw new CustomException(ErrorStatus._MEMBER_TOKEN_NOT_FOUND);
+        }
+
+        // 멤버의 리프레시 토큰 값과 전달 받은 리프레시 토큰 값이 다른 경우 (이런 경우가 발생할 일은 없음)
+        if (!refreshToken.equals(member.getRefreshToken())) {
+            throw new CustomException(ErrorStatus._MEMBER_TOKEN_MISMATCH);
+        }
+    }
+
 }

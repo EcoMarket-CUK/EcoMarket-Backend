@@ -23,6 +23,7 @@ public enum ErrorStatus {
     _MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER400", "해당 멤버를 찾을 수 없습니다."),
     _MEMBER_TOKEN_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER401", "해당 멤버의 리프레시 토큰이 존재하지 않습니다."),
     _MEMBER_TOKEN_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER402", "해당 멤버의 리프레시 토큰과 전달 받은 리프레시 토큰이 동일하지 않습니다."),
+    _MEMBER_ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "MEMBER403", "이미 로그아웃 상태입니다."),
 
     ;
 
