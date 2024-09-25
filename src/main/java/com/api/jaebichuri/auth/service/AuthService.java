@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -56,6 +56,12 @@ public class AuthService {
     @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
     private String USER_INFO_URI;
 
+    private final RestTemplate restTemplate;
+
+    public AuthService(RestTemplateBuilder restTemplateBuilder) {
+        this.restTemplate = restTemplateBuilder.build();
+    }
+
     public String getRedirectUrl() {
         String url = UriComponentsBuilder.fromHttpUrl(AUTHORIZATION_URI)
             .queryParam(QUERY_PARAMETER_NAME_CLIENT_ID, KAKAO_CLIENT_ID)
@@ -72,8 +78,7 @@ public class AuthService {
         HttpEntity<MultiValueMap<String, String>> tokenRequest = generateTokenRequest(code);
 
         // accessToken 요청 작업 시작
-        RestTemplate accessTokenRt = new RestTemplate();
-        ResponseEntity<String> accessTokenResponse = accessTokenRt.exchange(TOKEN_URI, HttpMethod.POST,
+        ResponseEntity<String> accessTokenResponse = restTemplate.exchange(TOKEN_URI, HttpMethod.POST,
             tokenRequest, String.class);
 
         // 위 요청에서 받은 응닶 값에서 accessToken 파싱
@@ -84,8 +89,7 @@ public class AuthService {
             accessToken);
 
         // 사용자 정보 요청과 응답
-        RestTemplate memberInfoRt = new RestTemplate();
-        ResponseEntity<String> memberInfoResponse = memberInfoRt.exchange(USER_INFO_URI,
+        ResponseEntity<String> memberInfoResponse = restTemplate.exchange(USER_INFO_URI,
             HttpMethod.POST,
             memberInfoRequest, String.class);
 
