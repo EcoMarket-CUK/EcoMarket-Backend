@@ -47,6 +47,7 @@ public class SecurityConfig {
         httpSecurity
             .authorizeHttpRequests((auth) -> auth
                 .requestMatchers("/oauth2/kakao/**").permitAll()
+                    .requestMatchers("/auction/**").permitAll()
                 .anyRequest().hasAnyAuthority("USER", "ADMIN")
             );
 
