@@ -18,7 +18,7 @@ public class AuctionProductImage {
     private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auction_product_id")
+    @JoinColumn(name = "auction_product_id", nullable = false)
     private AuctionProduct auctionProduct;
 
 }
