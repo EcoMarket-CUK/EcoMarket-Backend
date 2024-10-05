@@ -32,17 +32,7 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String refreshToken;
-
     public void updateNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public void saveRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public void deleteRefreshToken() {
-        this.refreshToken = null;
     }
 }
