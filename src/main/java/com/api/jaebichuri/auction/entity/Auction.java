@@ -1,5 +1,6 @@
 package com.api.jaebichuri.auction.entity;
 
+import com.api.jaebichuri.auction.enums.AuctionCategory;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
 import com.api.jaebichuri.member.entity.Member;
 import jakarta.persistence.*;
@@ -22,7 +23,7 @@ public class Auction {
     private Long id;
 
     @Column(nullable = false)
-    private int startPrice;
+    private Long startPrice;
 
     @Column(nullable = false)
     private LocalDateTime startTime;
@@ -33,12 +34,15 @@ public class Auction {
     @Enumerated(EnumType.STRING)
     private AuctionStatus auctionStatus;
 
+    @Enumerated(EnumType.STRING)
+    private AuctionCategory auctionCategory;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member seller;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auction_product_id")
+    @JoinColumn(name = "auction_product_id", nullable = false)
     private AuctionProduct product;
 
     @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
