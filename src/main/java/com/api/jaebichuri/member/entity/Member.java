@@ -29,6 +29,14 @@ public class Member {
 
     private String nickname;
 
+    private String name;
+
+    private String address;
+
+    private String zipCode;
+
+    private String accountNumber;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -45,4 +53,5 @@ public class Member {
     public void deleteRefreshToken() {
         this.refreshToken = null;
     }
+
 }
