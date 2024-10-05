@@ -5,7 +5,6 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,7 +17,7 @@ public class AuctionProduct {
     @Column(nullable = false)
     private String productName;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String productDescription;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
