@@ -18,7 +18,7 @@ public class AuctionBid {
     private Long id;
 
     @Column(nullable = false)
-    private int bidPrice;
+    private Long bidPrice;
 
     @Column(nullable = false)
     private LocalDateTime bidTime;
