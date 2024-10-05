@@ -1,4 +1,4 @@
-package com.api.jaebichuri.auth.jwt;
+package com.api.jaebichuri.global.util;
 
 import com.api.jaebichuri.auth.enums.TokenType;
 import io.jsonwebtoken.Claims;

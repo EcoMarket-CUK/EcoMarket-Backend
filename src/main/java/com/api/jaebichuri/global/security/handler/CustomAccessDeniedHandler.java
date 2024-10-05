@@ -1,4 +1,4 @@
-package com.api.jaebichuri.auth.handler;
+package com.api.jaebichuri.global.security.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

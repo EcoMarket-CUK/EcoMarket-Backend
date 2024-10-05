@@ -1,7 +1,7 @@
-package com.api.jaebichuri.global.config;
+package com.api.jaebichuri.global.security.config;
 
-import com.api.jaebichuri.auth.jwt.JwtFilter;
-import com.api.jaebichuri.auth.jwt.JwtUtil;
+import com.api.jaebichuri.global.filter.JwtFilter;
+import com.api.jaebichuri.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +46,8 @@ public class SecurityConfig {
         //경로별 인가 작업
         httpSecurity
             .authorizeHttpRequests((auth) -> auth
+                .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**", "/v2/swagger-config",
+                    "/swagger-resources/**").permitAll()
                 .requestMatchers("/oauth2/kakao/**").permitAll()
                 .anyRequest().hasAnyAuthority("USER", "ADMIN")
             );

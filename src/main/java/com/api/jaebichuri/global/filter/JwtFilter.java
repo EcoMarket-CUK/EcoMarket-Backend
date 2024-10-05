@@ -1,7 +1,8 @@
-package com.api.jaebichuri.auth.jwt;
+package com.api.jaebichuri.global.filter;
 
 import com.api.jaebichuri.auth.entity.CustomUserDetails;
 import com.api.jaebichuri.auth.enums.TokenType;
+import com.api.jaebichuri.global.util.JwtUtil;
 import com.api.jaebichuri.global.response.code.status.ErrorStatus;
 import com.api.jaebichuri.global.response.exception.CustomException;
 import jakarta.servlet.FilterChain;
@@ -31,7 +32,7 @@ public class JwtFilter extends OncePerRequestFilter {
         "/favicon.ico", "/oauth2/kakao", "/oauth2/kakao/code"
     );
 
-    private static final List<String> REFRESH_URLS = List.of("/oauth2/kakao/reissue");
+    private static final List<String> REFRESH_URLS = List.of("/reissue");
 
     public static final String HEADER_ATTRIBUTE_NAME_AUTHORIZATION = "Authorization";
     public final static String TOKEN_PREFIX = "Bearer ";
