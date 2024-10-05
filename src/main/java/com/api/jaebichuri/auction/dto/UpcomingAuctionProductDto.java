@@ -3,8 +3,6 @@ package com.api.jaebichuri.auction.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 public class UpcomingAuctionProductDto {
@@ -15,11 +13,11 @@ public class UpcomingAuctionProductDto {
 
     private String productDescription;
 
-    private int startPrice;
+    private Long startPrice;
 
-    private LocalDateTime startTime;
+    private String startTime;
 
-    private LocalDateTime endTime;
+    private String endTime;
 
     private String sellerNickname;
 
