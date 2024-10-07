@@ -25,6 +25,9 @@ public enum ErrorStatus {
     _MEMBER_TOKEN_MISMATCH(HttpStatus.BAD_REQUEST, "MEMBER402", "해당 멤버의 리프레시 토큰과 전달 받은 리프레시 토큰이 동일하지 않습니다."),
     _MEMBER_ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "MEMBER403", "이미 로그아웃 상태입니다."),
 
+    // 경매 관련 에러
+    _AUCTION_NOT_FOUND(HttpStatus.NOT_FOUND, "AUCTION400", "해당 경매를 찾을 수 없습니다.")
+
     ;
 
 
