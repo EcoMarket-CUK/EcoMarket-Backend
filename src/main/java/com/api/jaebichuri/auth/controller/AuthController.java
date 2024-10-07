@@ -1,5 +1,6 @@
 package com.api.jaebichuri.auth.controller;
 
+import com.api.jaebichuri.auth.dto.LoginSuccessDto;
 import com.api.jaebichuri.auth.dto.TokenResponseDto;
 import com.api.jaebichuri.auth.service.AuthService;
 import com.api.jaebichuri.global.response.ApiResponse;
@@ -16,7 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -48,7 +48,7 @@ public class AuthController {
      */
     @GetMapping("/oauth2/kakao/code")
     @Operation(summary = "로그인 API")
-    public ResponseEntity<ApiResponse<TokenResponseDto>> callBack(
+    public ResponseEntity<ApiResponse<LoginSuccessDto>> callBack(
         @RequestParam(required = false) String code)
         throws JsonProcessingException {
         Map<String, String> memberInfo = authService.getMemberInfo(code);
