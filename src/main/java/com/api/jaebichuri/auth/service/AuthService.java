@@ -1,10 +1,17 @@
 package com.api.jaebichuri.auth.service;
 
+import com.api.jaebichuri.auth.dto.TokenResponseDto;
+import com.api.jaebichuri.auth.jwt.JwtUtil;
+import com.api.jaebichuri.auth.repository.RefreshTokenRepository;
+import com.api.jaebichuri.global.response.code.status.ErrorStatus;
+import com.api.jaebichuri.global.response.exception.CustomException;
+import com.api.jaebichuri.member.entity.Member;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -57,9 +64,14 @@ public class AuthService {
     private String USER_INFO_URI;
 
     private final RestTemplate restTemplate;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtUtil jwtUtil;
 
-    public AuthService(RestTemplateBuilder restTemplateBuilder) {
+    public AuthService(RestTemplateBuilder restTemplateBuilder,
+        RefreshTokenRepository refreshTokenRepository, JwtUtil jwtUtil) {
         this.restTemplate = restTemplateBuilder.build();
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public String getRedirectUrl() {
@@ -78,7 +90,8 @@ public class AuthService {
         HttpEntity<MultiValueMap<String, String>> tokenRequest = generateTokenRequest(code);
 
         // accessToken 요청 작업 시작
-        ResponseEntity<String> accessTokenResponse = restTemplate.exchange(TOKEN_URI, HttpMethod.POST,
+        ResponseEntity<String> accessTokenResponse = restTemplate.exchange(TOKEN_URI,
+            HttpMethod.POST,
             tokenRequest, String.class);
 
         // 위 요청에서 받은 응닶 값에서 accessToken 파싱
@@ -96,6 +109,37 @@ public class AuthService {
         log.info("로그인 사용자 정보 : {}", memberInfoResponse);
 
         return getClientId(memberInfoResponse);
+    }
+
+    public TokenResponseDto reissue(String refreshToken) {
+        String clientId = jwtUtil.extractClientId(refreshToken);
+
+        // redis에서 해당 유저의 refresh token이 있는지 조회
+        String findRefreshToken = refreshTokenRepository.findById(clientId);
+
+        // redis에서 조회된 결과 없으면 예외
+        if (Objects.isNull(findRefreshToken)) {
+            throw new CustomException(ErrorStatus._MEMBER_TOKEN_NOT_FOUND);
+        }
+
+        String accessToken = jwtUtil.generateAccessToken(clientId);
+
+        // refresh token 존재하면 accessToken 재발급 + refreshToken은 원래 토큰 전달
+        return TokenResponseDto.builder()
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .build();
+    }
+
+    public void deleteRefreshToken(Member member) {
+        String clientId = member.getClientId();
+        String findRefreshToken = refreshTokenRepository.findById(clientId);
+
+        if (Objects.isNull(findRefreshToken)) {
+            throw new CustomException(ErrorStatus._MEMBER_ALREADY_LOGOUT);
+        }
+
+        refreshTokenRepository.deleteById(clientId);
     }
 
     private HttpEntity<MultiValueMap<String, String>> generateTokenRequest(String code) {
@@ -124,7 +168,8 @@ public class AuthService {
         return jsonNode.get(JSON_ATTRIBUTE_NAME_TOKEN).asText();
     }
 
-    private HttpEntity<MultiValueMap<String, String>> generateMemberInfoRequest(String accessToken) {
+    private HttpEntity<MultiValueMap<String, String>> generateMemberInfoRequest(
+        String accessToken) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HEADER_ATTRIBUTE_NAME_AUTH, HEADER_TOKEN_PREFIX + accessToken);
         headers.add(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_HEADER_VALUE);
@@ -132,7 +177,8 @@ public class AuthService {
         return new HttpEntity<>(headers);
     }
 
-    private Map<String, String> getClientId(ResponseEntity<String> response) throws JsonProcessingException {
+    private Map<String, String> getClientId(ResponseEntity<String> response)
+        throws JsonProcessingException {
         String responseBody = parseResponseBody(response);
 
         ObjectMapper objectMapper = new ObjectMapper();

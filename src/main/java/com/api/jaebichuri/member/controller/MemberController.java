@@ -5,6 +5,7 @@ import com.api.jaebichuri.auth.dto.TokenResponseDto;
 import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.service.MemberService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,19 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
+@Tag(name = "멤버 API")
 public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/reissue")
-    public ResponseEntity<ApiResponse<TokenResponseDto>> reissue(
-        @RequestAttribute("refresh") String refreshToken) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(memberService.reissue(refreshToken)));
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member) {
-        memberService.deleteRefreshToken(member);
-        return ResponseEntity.ok(ApiResponse.onSuccess("로그아웃 성공"));
-    }
 }

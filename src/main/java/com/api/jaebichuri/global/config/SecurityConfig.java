@@ -46,6 +46,8 @@ public class SecurityConfig {
         //경로별 인가 작업
         httpSecurity
             .authorizeHttpRequests((auth) -> auth
+                .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**", "/v2/swagger-config",
+                    "/swagger-resources/**").permitAll()
                 .requestMatchers("/oauth2/kakao/**").permitAll()
                     .requestMatchers("/auction/**").permitAll()
                 .anyRequest().hasAnyAuthority("USER", "ADMIN")
