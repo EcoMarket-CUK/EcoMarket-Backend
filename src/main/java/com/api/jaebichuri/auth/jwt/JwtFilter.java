@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
         "/favicon.ico", "/oauth2/kakao", "/oauth2/kakao/code"
     );
 
-    private static final List<String> REFRESH_URLS = List.of("/oauth2/kakao/reissue");
+    private static final List<String> REFRESH_URLS = List.of("/reissue");
 
     public static final String HEADER_ATTRIBUTE_NAME_AUTHORIZATION = "Authorization";
     public final static String TOKEN_PREFIX = "Bearer ";
