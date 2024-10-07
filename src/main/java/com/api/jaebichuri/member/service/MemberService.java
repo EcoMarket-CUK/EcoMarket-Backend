@@ -51,9 +51,18 @@ public class MemberService {
             Member member = findMember.get();
             member.updateKakaoProfileNickname(kakaoProfileNickname);
 
-            // jwt 엑세스 토큰 응답
+            // 추가 정보 입력한 사용자일 경우
+            if (member.getName() != null) {
+                // jwt 엑세스 토큰 응답
+                return LoginSuccessDto.builder()
+                    .isFirstLogin(false)
+                    .tokenResponseDto(tokenResponseDto)
+                    .build();
+            }
+
+            // 소셜 로그인을 시도한 적이 있지만, 추가 정보 화면에서 나갔던 경우
             return LoginSuccessDto.builder()
-                .isFirstLogin(false)
+                .isFirstLogin(true)
                 .tokenResponseDto(tokenResponseDto)
                 .build();
         }
