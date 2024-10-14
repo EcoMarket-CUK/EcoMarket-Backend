@@ -6,6 +6,8 @@ import com.api.jaebichuri.auction.enums.AuctionScreeningStatus;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
 import com.api.jaebichuri.auction.repository.*;
 
+import com.api.jaebichuri.auctionbid.entity.AuctionBid;
+import com.api.jaebichuri.auctionbid.repository.AuctionBidRepository;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.enums.Role;
 import com.api.jaebichuri.member.repository.MemberRepository;
@@ -25,7 +27,7 @@ public class DataInitializer implements CommandLineRunner {
     private final MemberRepository memberRepository;
     private final AuctionRepository auctionRepository;
     private final ProductRepository productRepository;
-    private final BidRepository bidRepository;
+    private final AuctionBidRepository bidRepository;
     private final ScreeningRepository screeningRepository;
     private final EndedAuctionRepository endedAuctionRepository;
 

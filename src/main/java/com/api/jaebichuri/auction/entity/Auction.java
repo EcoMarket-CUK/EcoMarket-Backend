@@ -2,6 +2,7 @@ package com.api.jaebichuri.auction.entity;
 
 import com.api.jaebichuri.auction.enums.AuctionCategory;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
+import com.api.jaebichuri.auctionbid.entity.AuctionBid;
 import com.api.jaebichuri.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;

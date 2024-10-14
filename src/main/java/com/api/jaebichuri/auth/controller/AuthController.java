@@ -1,5 +1,6 @@
 package com.api.jaebichuri.auth.controller;
 
+import com.api.jaebichuri.auth.dto.LoginSuccessDto;
 import com.api.jaebichuri.auth.dto.TokenResponseDto;
 import com.api.jaebichuri.auth.service.AuthService;
 import com.api.jaebichuri.global.response.ApiResponse;
@@ -16,10 +17,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
 
 @Slf4j
 @RestController
@@ -31,30 +30,32 @@ public class AuthController {
     private final MemberService memberService;
 
     /**
-     * 해당 핸들러로 카카오 소셜 로그인 요청 시 kakao 로그인 페이지로 리다이렉트
+     * 해당 핸들러로 카카오 소셜 로그인 요청 시 kakao 로그인 페이지 url 반환
      */
     @GetMapping("/oauth2/kakao")
-    @Operation(summary = "카카오 소셜 로그인 페이지 리다이렉트 API")
-    public RedirectView getLoginPage() {
+    @Operation(summary = "카카오 소셜 로그인 url API")
+    public ResponseEntity<ApiResponse<String>> getLoginUrl() {
         String redirectUrl = authService.getRedirectUrl();
         log.info("{}", redirectUrl);
-        return new RedirectView(redirectUrl);
+        return ResponseEntity.ok(ApiResponse.onSuccess(redirectUrl));
     }
 
     /**
-     * 1. /oauth2/kakao/url 로 요청하면 리다이렉트 주소를 반환해주고
+     * 1. /oauth2/kakao 로 요청하면 리다이렉트 주소를 반환해주고
      * 2. 해당 주소로 가서 로그인하면
-     * 3. 카카오 측에서 여기 핸들러로 리다이렉트해준다.
+     * 3. 카카오 측에서 여기 핸들러로 인가 코드와 함께 리다이렉트해준다.
+     * 4. 인가 코드로 카카오 서버에 access token 요청 담당
      */
     @GetMapping("/oauth2/kakao/code")
-    @Operation(summary = "로그인 API")
-    public ResponseEntity<ApiResponse<TokenResponseDto>> callBack(
+    @Operation(summary = "인가 코드 받아 처리하는 콜백 API")
+    public ResponseEntity<ApiResponse<LoginSuccessDto>> callBack(
         @RequestParam(required = false) String code)
         throws JsonProcessingException {
         Map<String, String> memberInfo = authService.getMemberInfo(code);
         return ResponseEntity.ok(
             ApiResponse.onSuccess(memberService.login(memberInfo)));
     }
+
 
     @GetMapping("/reissue")
     @Operation(summary = "access token 재발급 API")

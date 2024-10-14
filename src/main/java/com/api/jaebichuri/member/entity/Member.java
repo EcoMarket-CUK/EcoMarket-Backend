@@ -27,31 +27,29 @@ public class Member {
     // 카카오에서 제공해주는 유저 id + :KAKAO
     private String clientId;
 
-    private String nickname;
+    private String kakaoProfileNickname;
 
     private String name;
 
-    private String address;
+    private String nickname;
 
     private String zipCode;
+
+    private String address;
 
     private String accountNumber;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    private String refreshToken;
+    public void updateKakaoProfileNickname(String name) {
+        this.kakaoProfileNickname = name;
+    }
 
-    public void updateNickname(String nickname) {
+    public void updateInfo(String name, String nickname, String zipcode, String address) {
+        this.name = name;
         this.nickname = nickname;
+        this.zipCode= zipcode;
+        this.address = address;
     }
-
-    public void saveRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public void deleteRefreshToken() {
-        this.refreshToken = null;
-    }
-
 }
