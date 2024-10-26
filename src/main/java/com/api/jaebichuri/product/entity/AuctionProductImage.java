@@ -1,4 +1,4 @@
-package com.api.jaebichuri.auction.entity;
+package com.api.jaebichuri.product.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,6 +16,9 @@ public class AuctionProductImage {
 
     @Column(nullable = false)
     private String imageUrl;
+
+    @Column(nullable = false)
+    private Boolean isRepresentative;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_product_id", nullable = false)
