@@ -1,6 +1,6 @@
-package com.api.jaebichuri.auction.mapper;
+package com.api.jaebichuri.product.mapper;
 
-import com.api.jaebichuri.auction.dto.UpcomingAuctionProductDto;
+import com.api.jaebichuri.product.dto.UpcomingProductDetailsDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,6 +20,6 @@ public interface ProductMapper {
     @Mapping(target = "startTime", expression = "java(auction.getStartTime().format(formatter))")
     @Mapping(target=  "endTime", expression = "java(auction.getEndTime().format(formatter))")
     @Mapping(source = "seller.nickname", target = "sellerNickname")
-    UpcomingAuctionProductDto auctionToUpcomingAuctionProductDto(Auction auction);
+    UpcomingProductDetailsDto auctionToUpcomingAuctionProductDto(Auction auction);
 
 }

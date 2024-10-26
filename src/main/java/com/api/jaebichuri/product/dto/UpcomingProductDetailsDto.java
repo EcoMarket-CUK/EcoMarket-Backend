@@ -1,11 +1,11 @@
-package com.api.jaebichuri.auction.dto;
+package com.api.jaebichuri.product.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class UpcomingAuctionProductDto {
+public class UpcomingProductDetailsDto {
 
     private Long productId;
 
