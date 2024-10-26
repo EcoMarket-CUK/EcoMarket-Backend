@@ -1,4 +1,4 @@
-package com.api.jaebichuri.auction.enums;
+package com.api.jaebichuri.screening.enums;
 
 public enum AuctionScreeningStatus {
 
