@@ -1,6 +1,7 @@
-package com.api.jaebichuri.auctionbid.entity;
+package com.api.jaebichuri.bid.entity;
 
 import com.api.jaebichuri.auction.entity.Auction;
+import com.api.jaebichuri.global.entity.BaseEntity;
 import com.api.jaebichuri.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AuctionBid {
+public class AuctionBid extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,9 +21,6 @@ public class AuctionBid {
 
     @Column(nullable = false)
     private Long bidPrice;
-
-    @Column(nullable = false)
-    private LocalDateTime bidTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id", nullable = false)
