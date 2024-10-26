@@ -1,9 +1,9 @@
-package com.api.jaebichuri.auction.service;
+package com.api.jaebichuri.product.service;
 
-import com.api.jaebichuri.auction.dto.UpcomingAuctionProductDto;
+import com.api.jaebichuri.product.dto.UpcomingProductDetailsDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
-import com.api.jaebichuri.auction.mapper.ProductMapper;
+import com.api.jaebichuri.product.mapper.ProductMapper;
 import com.api.jaebichuri.auction.repository.AuctionRepository;
 import com.api.jaebichuri.global.response.code.status.ErrorStatus;
 import com.api.jaebichuri.global.response.exception.CustomException;
@@ -20,7 +20,7 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     @Transactional(readOnly = true)
-    public UpcomingAuctionProductDto getUpcomingAuctionProductDetails(Long auctionId) {
+    public UpcomingProductDetailsDto getUpcomingAuctionProductDetails(Long auctionId) {
         Auction auction = auctionRepository.findByIdAndAuctionStatus(auctionId, AuctionStatus.UPCOMING)
                 .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
 
