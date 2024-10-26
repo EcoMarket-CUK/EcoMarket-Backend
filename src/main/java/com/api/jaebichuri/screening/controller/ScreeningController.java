@@ -1,42 +1,53 @@
-package com.api.jaebichuri.auction.controller;
+package com.api.jaebichuri.screening.controller;
 
-import com.api.jaebichuri.auction.dto.EndedAuctionDto;
-import com.api.jaebichuri.auction.dto.ScreeningDto;
-import com.api.jaebichuri.auction.dto.ScreeningListDto;
-import com.api.jaebichuri.auction.service.ScreeningService;
+import com.api.jaebichuri.auction.dto.OngoingAuctionProductDto;
 import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.entity.Member;
+import com.api.jaebichuri.screening.dto.EndedAuctionProductDto;
+import com.api.jaebichuri.screening.dto.ScreeningDto;
+import com.api.jaebichuri.screening.dto.ScreeningListDto;
+import com.api.jaebichuri.screening.service.ScreeningService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auction/screenings")
+@RequestMapping("/screenings")
 public class ScreeningController {
 
     private final ScreeningService screeningService;
 
     @PostMapping
     @Operation(summary = "업체 측 심사용 경매 상품 등록 API")
-    public ResponseEntity<ApiResponse<String>> createAuctionScreening(@Valid @RequestBody ScreeningDto screeningDto, @AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.createAuctionScreening(screeningDto, member)));
+    public ResponseEntity<ApiResponse<String>> createAuctionScreening(@Valid @RequestPart ScreeningDto screeningDto,
+                                                                      @RequestPart List<MultipartFile> images,
+                                                                      @AuthenticationPrincipal Member member) throws IOException {
+        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.createAuctionScreening(screeningDto, images, member)));
     }
 
     @GetMapping
     @Operation(summary = "업체 측 심사용 경매 상품 목록 조회 API")
-    public ResponseEntity<ApiResponse<List<ScreeningListDto>>> getAuctionScreenings(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getAuctionScreenings(member)));
+    public ResponseEntity<ApiResponse<List<ScreeningListDto>>> getAllScreenings(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getAllScreenings(member)));
     }
 
-    @GetMapping("/ended-auctions")
-    @Operation(summary = "마감된 경매 목록 조회 API")
-    public ResponseEntity<ApiResponse<List<EndedAuctionDto>>> getEndedAuctions(@AuthenticationPrincipal Member member) {
+    @GetMapping("/ongoing")
+    @Operation(summary = "특정 회원의 진행 중인 경매 목록 조회 API")
+    public ResponseEntity<ApiResponse<List<OngoingAuctionProductDto>>> getOngoingAuctions(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getOngoingAuctions(member)));
+    }
+
+    @GetMapping("/ended")
+    @Operation(summary = "특정 회원의 종료된 경매 목록 조회 API")
+    public ResponseEntity<ApiResponse<List<EndedAuctionProductDto>>> getEndedAuctions(@AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getEndedAuctions(member)));
     }
 
