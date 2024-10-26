@@ -1,7 +1,11 @@
-package com.api.jaebichuri.auction.entity;
+package com.api.jaebichuri.product.entity;
 
+import com.api.jaebichuri.auction.entity.Auction;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -22,5 +26,12 @@ public class AuctionProduct {
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Auction auction;
+
+    @OneToMany(mappedBy = "auctionProduct", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AuctionProductImage> images = new ArrayList<>();
+
+    public List<AuctionProductImage> getImages() {
+        return images;
+    }
 
 }
