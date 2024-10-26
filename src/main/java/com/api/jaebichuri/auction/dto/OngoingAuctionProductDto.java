@@ -1,11 +1,12 @@
 package com.api.jaebichuri.auction.dto;
 
+import com.api.jaebichuri.auction.enums.AuctionCategory;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ProductDto {
+public class OngoingAuctionProductDto {
 
     private Long productId;
 
@@ -13,8 +14,12 @@ public class ProductDto {
 
     private String productDescription;
 
-    private String startTime;
+    private Long currentPrice;
 
-    private String endTime;
+    private Long currentBidders;
+
+    private AuctionCategory auctionCategory;
+
+    private String imageUrl;
 
 }

@@ -1,6 +1,7 @@
-package com.api.jaebichuri.auction.dto;
+package com.api.jaebichuri.screening.dto;
 
 import com.api.jaebichuri.auction.enums.AuctionCategory;
+import com.api.jaebichuri.screening.enums.AuctionScreeningStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,14 @@ public class ScreeningListDto {
 
     private String productName;
 
+    private String productDescription;
+
+    private Long desiredStartPrice;
+
     private AuctionCategory auctionCategory;
+
+    private AuctionScreeningStatus screeningStatus;
+
+    private String imageUrl;
 
 }
