@@ -43,7 +43,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           source: project.jar
-          target: /home/ubuntu/my-repo/tobe
+          target: /home/ubuntu/Jaebichuri-Backend/tobe
 
       - name: SSH To EC2
         uses: appleboy/ssh-action@v1.0.3
