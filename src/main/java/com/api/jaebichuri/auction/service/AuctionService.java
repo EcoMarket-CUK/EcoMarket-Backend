@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,29 +22,22 @@ public class AuctionService {
     private final AuctionMapper auctionMapper;
 
     @Transactional(readOnly = true)
-    public List<OngoingAuctionProductDto> getTopOngoingAuctions(AuctionCategory category) {
-        List<Auction> ongoingAuctions;
+    public List<?> getTopAuctionsByStatus(AuctionStatus status, AuctionCategory category) {
+        List<Auction> auctions;
 
         if (category == null) {
-            ongoingAuctions = auctionRepository.findTop5ByAuctionStatusOrderByCreatedAtDesc(AuctionStatus.ONGOING);
+            auctions = auctionRepository.findTop5ByAuctionStatusOrderByCreatedAtDesc(status);
         } else {
-            ongoingAuctions = auctionRepository.findTop5ByAuctionStatusAndAuctionCategoryOrderByCreatedAtDesc(AuctionStatus.ONGOING, category);
+            auctions = auctionRepository.findTop5ByAuctionStatusAndAuctionCategoryOrderByCreatedAtDesc(status, category);
         }
 
-        return auctionMapper.toOngoingProductDtoList(ongoingAuctions);
-    }
-
-    @Transactional(readOnly = true)
-    public List<UpcomingAuctionProductDto> getTopUpcomingAuctions(AuctionCategory category) {
-        List<Auction> upcomingAuctions;
-
-        if (category == null) {
-            upcomingAuctions = auctionRepository.findTop5ByAuctionStatusOrderByCreatedAtDesc(AuctionStatus.UPCOMING);
+        if (status == AuctionStatus.ONGOING) {
+            return auctionMapper.toOngoingProductDtoList(auctions);
+        } else if (status == AuctionStatus.UPCOMING) {
+            return auctionMapper.toUpcomingProductDtoList(auctions);
         } else {
-            upcomingAuctions = auctionRepository.findTop5ByAuctionStatusAndAuctionCategoryOrderByCreatedAtDesc(AuctionStatus.UPCOMING, category);
+            return Collections.emptyList();
         }
-
-        return auctionMapper.toUpcomingProductDtoList(upcomingAuctions);
     }
 
     @Transactional(readOnly = true)
@@ -57,6 +51,8 @@ public class AuctionService {
         }
 
         return auctionMapper.toOngoingProductDtoList(ongoingAuctions);
+
     }
 
 }
+
