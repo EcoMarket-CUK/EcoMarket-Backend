@@ -1,6 +1,7 @@
 package com.api.jaebichuri.global.config;
 
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,17 +11,35 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+@Slf4j
 @Configuration
-public class RedisConfig {
+@RequiredArgsConstructor
+public class SshRedisConfig {
 
-    @Value("${spring.data.redis.host}")
-    private String host;
+    private final SshTunnelingInitializer initializer;
 
-    @Value("${spring.data.redis.port}")
-    private int port;
+    @Value("${ec2.redis_url}")
+    private String redisUrl;
+
+    @Value("${ec2.redis_port}")
+    private int redisPort;
+
+    @Value("${profile}")
+    String profile;
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
+        String host = redisUrl;
+        int port = redisPort;
+
+        if (profile.equals("local")) {
+            Integer forwardedPort = initializer.buildSshConnection(redisUrl, redisPort);
+            host = "localhost";
+            port = forwardedPort;
+        }
+
+        log.info("Redis connection through SSH: host={}, port={}", host, port);
+
         return new LettuceConnectionFactory(host, port);
     }
 
