@@ -26,8 +26,12 @@ public enum ErrorStatus {
     _MEMBER_ALREADY_LOGOUT(HttpStatus.BAD_REQUEST, "MEMBER403", "이미 로그아웃 상태입니다."),
 
     // 경매 관련 에러
-    _AUCTION_NOT_FOUND(HttpStatus.NOT_FOUND, "AUCTION400", "해당 경매를 찾을 수 없습니다.")
+    _AUCTION_NOT_FOUND(HttpStatus.NOT_FOUND, "AUCTION400", "해당 경매를 찾을 수 없습니다."),
 
+    // 경매 심사 관련 에러
+    _IMAGE_UPLOAD_FAILED(HttpStatus.BAD_REQUEST, "SCREENING400", "이미지 업로드에 실패했습니다."),
+    _MIN_IMAGES_REQUIRED(HttpStatus.BAD_REQUEST, "SCREENING401", "최소 1개 이상의 이미지를 업로드해야 합니다."),
+    _MAX_IMAGES_EXCEEDED(HttpStatus.BAD_REQUEST, "SCREENING402", "최대 3개의 이미지만 업로드할 수 있습니다.")
     ;
 
 

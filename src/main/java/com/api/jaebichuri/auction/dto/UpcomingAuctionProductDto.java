@@ -11,14 +11,10 @@ public class UpcomingAuctionProductDto {
 
     private String productName;
 
-    private String productDescription;
-
-    private Long startPrice;
-
     private String startTime;
 
-    private String endTime;
+    private String startPrice;
 
-    private String sellerNickname;
+    private String imageUrl;
 
 }

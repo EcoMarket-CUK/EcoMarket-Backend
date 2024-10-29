@@ -2,8 +2,10 @@ package com.api.jaebichuri.auction.entity;
 
 import com.api.jaebichuri.auction.enums.AuctionCategory;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
-import com.api.jaebichuri.auctionbid.entity.AuctionBid;
+import com.api.jaebichuri.bid.entity.AuctionBid;
+import com.api.jaebichuri.global.entity.BaseEntity;
 import com.api.jaebichuri.member.entity.Member;
+import com.api.jaebichuri.product.entity.AuctionProduct;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,7 +19,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Auction {
+@Table(indexes = @Index(name = "idx_auction_status", columnList = "auctionStatus"))
+public class Auction extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +34,19 @@ public class Auction {
 
     @Column(nullable = false)
     private LocalDateTime endTime;
+
+    @Column(nullable = true)
+    private Long currentPrice;
+
+    // 입찰자 수
+    @Column(nullable = true)
+    private Long numOfBidders;
+
+    @Column(nullable = true)
+    private Long finalBidPrice;
+
+    @Column(nullable = true)
+    private Boolean isBidSuccessful;
 
     @Enumerated(EnumType.STRING)
     private AuctionStatus auctionStatus;

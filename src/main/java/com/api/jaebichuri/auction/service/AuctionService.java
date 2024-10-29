@@ -1,16 +1,17 @@
 package com.api.jaebichuri.auction.service;
 
-import com.api.jaebichuri.auction.dto.ProductDto;
+import com.api.jaebichuri.auction.dto.OngoingAuctionProductDto;
+import com.api.jaebichuri.auction.dto.UpcomingAuctionProductDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.auction.enums.AuctionCategory;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
 import com.api.jaebichuri.auction.mapper.AuctionMapper;
 import com.api.jaebichuri.auction.repository.AuctionRepository;
-import com.api.jaebichuri.auction.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,29 +22,37 @@ public class AuctionService {
     private final AuctionMapper auctionMapper;
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getOngoingAuctions(AuctionCategory category) {
-        List<Auction> ongoingAuctions;
+    public List<?> getTopAuctionsByStatus(AuctionStatus status, AuctionCategory category) {
+        List<Auction> auctions;
 
-        if(category == null) {
-            ongoingAuctions = auctionRepository.findTop5ByAuctionStatusOrderByStartTimeDesc(AuctionStatus.ONGOING);
+        if (category == null) {
+            auctions = auctionRepository.findTop5ByAuctionStatusOrderByCreatedAtDesc(status);
         } else {
-            ongoingAuctions = auctionRepository.findTop5ByAuctionStatusAndAuctionCategoryOrderByStartTimeDesc(AuctionStatus.ONGOING, category);
+            auctions = auctionRepository.findTop5ByAuctionStatusAndAuctionCategoryOrderByCreatedAtDesc(status, category);
         }
 
-        return auctionMapper.toOngoingProductDtoList(ongoingAuctions);
+        if (status == AuctionStatus.ONGOING) {
+            return auctionMapper.toOngoingProductDtoList(auctions);
+        } else if (status == AuctionStatus.UPCOMING) {
+            return auctionMapper.toUpcomingProductDtoList(auctions);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Transactional(readOnly = true)
-    public List<ProductDto> getUpcomingAuctions(AuctionCategory category) {
+    public List<OngoingAuctionProductDto> getAllOngoingAuctions(AuctionCategory category) {
         List<Auction> ongoingAuctions;
 
         if(category == null) {
-            ongoingAuctions = auctionRepository.findTop5ByAuctionStatusOrderByStartTimeDesc(AuctionStatus.UPCOMING);
+            ongoingAuctions = auctionRepository.findAllByAuctionStatusOrderByCreatedAtDesc(AuctionStatus.ONGOING);
         } else {
-            ongoingAuctions = auctionRepository.findTop5ByAuctionStatusAndAuctionCategoryOrderByStartTimeDesc(AuctionStatus.UPCOMING, category);
+            ongoingAuctions = auctionRepository.findAllByAuctionStatusAndAuctionCategoryOrderByCreatedAtDesc(AuctionStatus.ONGOING, category);
         }
 
-        return auctionMapper.toUpcomingProductDtoList(ongoingAuctions);
+        return auctionMapper.toOngoingProductDtoList(ongoingAuctions);
+
     }
 
 }
+

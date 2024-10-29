@@ -2,15 +2,19 @@ package com.api.jaebichuri.global.init;
 
 import com.api.jaebichuri.auction.entity.*;
 import com.api.jaebichuri.auction.enums.AuctionCategory;
-import com.api.jaebichuri.auction.enums.AuctionScreeningStatus;
+import com.api.jaebichuri.product.repository.ProductRepository;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
 import com.api.jaebichuri.auction.repository.*;
 
-import com.api.jaebichuri.auctionbid.entity.AuctionBid;
-import com.api.jaebichuri.auctionbid.repository.AuctionBidRepository;
+import com.api.jaebichuri.bid.entity.AuctionBid;
+import com.api.jaebichuri.bid.repository.AuctionBidRepository;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.enums.Role;
 import com.api.jaebichuri.member.repository.MemberRepository;
+import com.api.jaebichuri.product.entity.AuctionProduct;
+import com.api.jaebichuri.screening.entity.AuctionScreening;
+import com.api.jaebichuri.screening.enums.AuctionScreeningStatus;
+import com.api.jaebichuri.screening.repository.ScreeningRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -29,7 +33,6 @@ public class DataInitializer implements CommandLineRunner {
     private final ProductRepository productRepository;
     private final AuctionBidRepository bidRepository;
     private final ScreeningRepository screeningRepository;
-    private final EndedAuctionRepository endedAuctionRepository;
 
     @Override
     @Transactional
@@ -107,70 +110,60 @@ public class DataInitializer implements CommandLineRunner {
 
         AuctionBid bid1 = AuctionBid.builder()
                 .bidPrice(11000L)
-                .bidTime(LocalDateTime.of(2024, 10, 11, 6, 30, 30))
                 .auction(auction1)
                 .bidder(member2)
                 .build();
 
         AuctionBid bid2 = AuctionBid.builder()
                 .bidPrice(12000L)
-                .bidTime(LocalDateTime.of(2024, 10, 11, 7, 30, 30))
                 .auction(auction1)
                 .bidder(member3)
                 .build();
 
         AuctionBid bid3 = AuctionBid.builder()
                 .bidPrice(13000L)
-                .bidTime(LocalDateTime.of(2024, 10, 11, 8, 30, 30))
                 .auction(auction1)
                 .bidder(member4)
                 .build();
 
         AuctionBid bid4 = AuctionBid.builder()
                 .bidPrice(20000L)
-                .bidTime(LocalDateTime.of(2024, 10, 11, 9, 30, 30))
                 .auction(auction1)
                 .bidder(member5)
                 .build();
 
         AuctionBid bid5 = AuctionBid.builder()
                 .bidPrice(25000L)
-                .bidTime(LocalDateTime.of(2024, 10, 11, 10, 30, 30))
                 .auction(auction1)
                 .bidder(member2)
                 .build();
 
         AuctionBid bid6 = AuctionBid.builder()
                 .bidPrice(50000L)
-                .bidTime(LocalDateTime.of(2024, 10, 16, 11, 30, 30))
                 .auction(auction2)
                 .bidder(member3)
                 .build();
 
         AuctionBid bid7 = AuctionBid.builder()
                 .bidPrice(51000L)
-                .bidTime(LocalDateTime.of(2024, 10, 17, 11, 30, 30))
                 .auction(auction2)
                 .bidder(member4)
                 .build();
 
         AuctionBid bid8 = AuctionBid.builder()
                 .bidPrice(50000L)
-                .bidTime(LocalDateTime.of(2024, 10, 11, 11, 30, 30))
                 .auction(auction3)
                 .bidder(member3)
                 .build();
 
         AuctionBid bid9 = AuctionBid.builder()
                 .bidPrice(55000L)
-                .bidTime(LocalDateTime.of(2024, 10, 12, 11, 30, 30))
                 .auction(auction3)
                 .bidder(member4)
                 .build();
 
         AuctionBid bid10 = AuctionBid.builder()
                 .bidPrice(58000L)
-                .bidTime(LocalDateTime.of(2024, 10, 13, 11, 30, 30))
                 .auction(auction3)
                 .bidder(member5)
                 .build();
@@ -179,7 +172,6 @@ public class DataInitializer implements CommandLineRunner {
                 .productName("Screening Product 1")
                 .productDescription("Screening Product 1에 대한 설명")
                 .desiredStartPrice(10000L)
-                .createdAt(LocalDateTime.of(2024, 10, 10, 12, 30, 30))
                 .screeningStatus(AuctionScreeningStatus.PENDING)
                 .auctionCategory(AuctionCategory.CLOTHING)
                 .seller(member1)
@@ -189,33 +181,8 @@ public class DataInitializer implements CommandLineRunner {
                 .productName("Screening Product 2")
                 .productDescription("Screening Product 2에 대한 설명")
                 .desiredStartPrice(7000L)
-                .createdAt(LocalDateTime.of(2024, 10, 15, 12, 30, 30))
                 .screeningStatus(AuctionScreeningStatus.PENDING)
                 .auctionCategory(AuctionCategory.INSTRUMENT)
-                .seller(member1)
-                .build();
-
-        EndedAuction endedAuction1 = EndedAuction.builder()
-                .productName("Ended Product 1")
-                .finalBidPrice(50000L)
-                .isBidSuccessful(true)
-                .auctionCategory(AuctionCategory.INSTRUMENT)
-                .seller(member1)
-                .build();
-
-        EndedAuction endedAuction2 = EndedAuction.builder()
-                .productName("Ended Product 2")
-                .finalBidPrice(80000L)
-                .isBidSuccessful(true)
-                .auctionCategory(AuctionCategory.JEWELRY)
-                .seller(member1)
-                .build();
-
-        EndedAuction endedAuction3 = EndedAuction.builder()
-                .productName("Ended Product 3")
-                .finalBidPrice(10000L)
-                .isBidSuccessful(true)
-                .auctionCategory(AuctionCategory.RECORD)
                 .seller(member1)
                 .build();
 
@@ -228,7 +195,6 @@ public class DataInitializer implements CommandLineRunner {
         auctionRepository.saveAll(Arrays.asList(auction1, auction2, auction3));
         bidRepository.saveAll(Arrays.asList(bid1, bid2, bid3, bid4, bid5, bid6, bid7, bid8, bid9, bid10));
         screeningRepository.saveAll(Arrays.asList(screening1, screening2));
-        endedAuctionRepository.saveAll(Arrays.asList(endedAuction1, endedAuction2, endedAuction3));
     }
 
 }
