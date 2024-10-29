@@ -1,9 +1,8 @@
 package com.api.jaebichuri.screening.controller;
 
-import com.api.jaebichuri.auction.dto.OngoingAuctionProductDto;
+import com.api.jaebichuri.auction.enums.AuctionStatus;
 import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.entity.Member;
-import com.api.jaebichuri.screening.dto.EndedAuctionProductDto;
 import com.api.jaebichuri.screening.dto.ScreeningDto;
 import com.api.jaebichuri.screening.dto.ScreeningListDto;
 import com.api.jaebichuri.screening.service.ScreeningService;
@@ -39,16 +38,11 @@ public class ScreeningController {
         return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getAllScreenings(member)));
     }
 
-    @GetMapping("/ongoing")
-    @Operation(summary = "특정 회원의 진행 중인 경매 목록 조회 API")
-    public ResponseEntity<ApiResponse<List<OngoingAuctionProductDto>>> getOngoingAuctions(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getOngoingAuctions(member)));
-    }
-
-    @GetMapping("/ended")
-    @Operation(summary = "특정 회원의 종료된 경매 목록 조회 API")
-    public ResponseEntity<ApiResponse<List<EndedAuctionProductDto>>> getEndedAuctions(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getEndedAuctions(member)));
+    @GetMapping("/member-auctions")
+    @Operation(summary = "특정 회원의 경매 목록 조회 API")
+    public ResponseEntity<ApiResponse<List<?>>> getAuctionsByStatus(@RequestParam AuctionStatus status,
+                                                                    @AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(screeningService.getAuctionsByStatus(status, member)));
     }
 
 }

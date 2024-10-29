@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -65,24 +66,25 @@ public class ScreeningService {
         return screeningMapper.toScreeningListDto(screenings);
     }
 
+    @Transactional(readOnly = true)
+    public List<?> getAuctionsByStatus(AuctionStatus status, Member member) {
+        List<Auction> auctions = auctionRepository.findBySellerAndAuctionStatus(member, status);
+
+        if (status == AuctionStatus.ONGOING) {
+            return auctionMapper.toOngoingProductDtoList(auctions);
+        } else if (status == AuctionStatus.FINISHED) {
+            return auctionMapper.toEndedProductDtoList(auctions);
+        }
+
+        return Collections.emptyList();
+    }
+
     private void validateImages(List<MultipartFile> images) {
         if (images == null || images.isEmpty()) {
             throw new CustomException(ErrorStatus._MIN_IMAGES_REQUIRED);
         } else if (images.size() > 3) {
             throw new CustomException(ErrorStatus._MAX_IMAGES_EXCEEDED);
         }
-    }
-
-    @Transactional(readOnly = true)
-    public List<OngoingAuctionProductDto> getOngoingAuctions(Member member) {
-        List<Auction> ongoingAuctions = auctionRepository.findBySellerAndAuctionStatus(member, AuctionStatus.ONGOING);
-        return auctionMapper.toOngoingProductDtoList(ongoingAuctions);
-    }
-
-    @Transactional(readOnly = true)
-    public List<EndedAuctionProductDto> getEndedAuctions(Member member) {
-        List<Auction> endedAuctions = auctionRepository.findBySellerAndAuctionStatus(member, AuctionStatus.FINISHED);
-        return auctionMapper.toEndedProductDtoList(endedAuctions);
     }
 
 }
