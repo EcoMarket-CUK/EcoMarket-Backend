@@ -15,7 +15,7 @@ public class EndedAuctionProductDto {
 
     private Long finalBidPrice;
 
-    private Long finalBidders;
+    private Long numOfBidders;
 
     private Boolean isBidSuccessful;
 

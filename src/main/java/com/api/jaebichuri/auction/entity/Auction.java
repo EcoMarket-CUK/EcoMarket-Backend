@@ -38,16 +38,12 @@ public class Auction extends BaseEntity {
     @Column(nullable = true)
     private Long currentPrice;
 
-    // 현재 입찰자 수
+    // 입찰자 수
     @Column(nullable = true)
-    private Long currentBidders;
+    private Long numOfBidders;
 
     @Column(nullable = true)
     private Long finalBidPrice;
-
-    // 최종 입찰자 수
-    @Column(nullable = true)
-    private Long finalBidders;
 
     @Column(nullable = true)
     private Boolean isBidSuccessful;
