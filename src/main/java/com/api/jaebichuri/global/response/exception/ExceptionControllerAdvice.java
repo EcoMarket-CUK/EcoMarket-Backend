@@ -1,12 +1,17 @@
 package com.api.jaebichuri.global.response.exception;
 
+import com.api.jaebichuri.bid.dto.AuctionBidSocketResponse.AuctionBidderResponse;
+import com.api.jaebichuri.bid.mapper.AuctionBidMapper;
 import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.global.response.code.status.ErrorStatus;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +21,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
 public class ExceptionControllerAdvice {
+
+    private final SimpMessagingTemplate simpMessagingTemplate;
+    private final AuctionBidMapper auctionBidMapper;
 
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<ApiResponse<Object>> handleSignatureException(SignatureException e) {
@@ -89,5 +98,18 @@ public class ExceptionControllerAdvice {
         ErrorStatus errorStatus = ErrorStatus._TOKEN_MISMATCH;
         return ResponseEntity.status(errorStatus.getHttpStatus()).body(ApiResponse.onFailure(
             errorStatus.getCode(), errorStatus.getMessage(), e.getMessage()));
+    }
+
+    /**
+     * 웹 소켓 예외 처리
+     */
+    @MessageExceptionHandler(CustomSocketException.class)
+    public void handleCustomSocketException(CustomSocketException e) {
+        String message = e.getErrorStatus().getMessage();
+        AuctionBidderResponse auctionBidderResponse = auctionBidMapper.toFailResponse(
+            e.getErrorStatus(), message);
+
+        simpMessagingTemplate.convertAndSend("/sub/members/" + e.getMemberId(),
+            auctionBidderResponse);
     }
 }

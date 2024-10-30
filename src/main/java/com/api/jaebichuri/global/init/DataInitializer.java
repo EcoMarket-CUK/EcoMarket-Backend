@@ -74,6 +74,7 @@ public class DataInitializer implements CommandLineRunner {
                 .auctionStatus(AuctionStatus.UPCOMING)
                 .auctionCategory(AuctionCategory.BAGS)
                 .seller(member1)
+                .numOfBidders(5L)
                 .build();
 
         Auction auction2 = Auction.builder()
@@ -83,6 +84,7 @@ public class DataInitializer implements CommandLineRunner {
                 .auctionStatus(AuctionStatus.UPCOMING)
                 .auctionCategory(AuctionCategory.ELECTRONICS)
                 .seller(member1)
+                .numOfBidders(2L)
                 .build();
 
         Auction auction3 = Auction.builder()
@@ -91,6 +93,7 @@ public class DataInitializer implements CommandLineRunner {
                 .endTime(LocalDateTime.of(2024, 10, 13, 12, 30, 30))
                 .auctionStatus(AuctionStatus.ONGOING)
                 .seller(member1)
+                .numOfBidders(3L)
                 .build();
 
         AuctionProduct product1 = AuctionProduct.builder()
