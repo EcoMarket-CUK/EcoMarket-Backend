@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/swagger-ui/**", "/v3/api-docs/**", "/v2/swagger-config",
                     "/swagger-resources/**").permitAll()
                 .requestMatchers("/oauth2/kakao/**").permitAll()
-                    .requestMatchers("/auction/**").permitAll()
+                .requestMatchers("/auctions/**", "/products/**").permitAll()
                 .anyRequest().hasAnyAuthority("USER", "ADMIN")
             );
 
