@@ -35,17 +35,12 @@ public class AuctionBidService {
 
         Long numOfBidders = auction.getNumOfBidders();
 
-        Optional<AuctionBid> optionalTopAuctionBid = auctionBidRepository.findTopByAuctionOrderByBidPriceDesc(
-            auction);
-
-        if (optionalTopAuctionBid.isPresent()) {
-            AuctionBid topAuctionBid = optionalTopAuctionBid.get();
-            Long canBidPrice = calculateCanBidPrice(topAuctionBid.getBidPrice());
-
-            return auctionBidMapper.toHttpResponse(auction, topAuctionBid, canBidPrice,
-                numOfBidders);
-        }
-        return auctionBidMapper.toHttpResponse(auction);
+        return auctionBidRepository.findTopByAuctionOrderByBidPriceDesc(auction)
+            .map(topAuctionBid -> {
+                Long canBidPrice = calculateCanBidPrice(topAuctionBid.getBidPrice());
+                return auctionBidMapper.toHttpResponse(auction, topAuctionBid, canBidPrice,
+                    numOfBidders);
+            }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction));
     }
 
     @DistributedLock(key = "auctionId")
@@ -84,12 +79,7 @@ public class AuctionBidService {
                 member.getId());
         }
 
-        AuctionBid auctionBid = AuctionBid.builder()
-            .bidPrice(requestBidPrice)
-            .auction(auction)
-            .bidder(member)
-            .build();
-        auctionBidRepository.save(auctionBid);
+        AuctionBid auctionBid = saveAuctionBid(member, auction, requestBidPrice);
 
         Long responseCanBidPrice = calculateCanBidPrice(auctionBid.getBidPrice());
 
@@ -118,12 +108,7 @@ public class AuctionBidService {
         Long requestBidPrice) {
         boolean isNotNewBidder = auctionBidRepository.existsByBidderAndAuction(member, auction);
 
-        AuctionBid auctionBid = AuctionBid.builder()
-            .bidPrice(requestBidPrice)
-            .auction(auction)
-            .bidder(member)
-            .build();
-        auctionBidRepository.save(auctionBid);
+        AuctionBid auctionBid = saveAuctionBid(member, auction, requestBidPrice);
 
         Long responseCanBidPrice = calculateCanBidPrice(auctionBid.getBidPrice());
 
@@ -140,5 +125,15 @@ public class AuctionBidService {
             .setScale(0, RoundingMode.HALF_UP);
 
         return minimumAllowedBid.longValue();
+    }
+
+    private AuctionBid saveAuctionBid(Member member, Auction auction, Long requestBidPrice) {
+        AuctionBid auctionBid = AuctionBid.builder()
+            .bidPrice(requestBidPrice)
+            .auction(auction)
+            .bidder(member)
+            .build();
+        auctionBidRepository.save(auctionBid);
+        return auctionBid;
     }
 }
