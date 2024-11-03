@@ -54,8 +54,8 @@ public class SecurityConfig {
                     , "/swagger-resources/**")
                 .permitAll()
                 .requestMatchers("/oauth2/kakao/**").permitAll()
-                .requestMatchers("/auction/**").permitAll()
                 .requestMatchers("/ws").permitAll()
+                .requestMatchers("/auctions/**", "/products/**").permitAll()
                 .anyRequest().hasAnyAuthority("USER", "ADMIN")
             );
 
