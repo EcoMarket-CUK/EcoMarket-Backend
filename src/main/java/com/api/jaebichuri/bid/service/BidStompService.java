@@ -16,6 +16,9 @@ public class BidStompService {
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final AuctionBidMapper auctionBidMapper;
 
+    private static final String AUCTION_TOPIC_PREFIX = "/sub/auctions/";
+    private static final String MEMBER_TOPIC_PREFIX = "/sub/members/";
+
     public void bidPub(AuctionBidSocketResponse socketResponse) {
         // 해당 경매를 구독중인 모든 멤버에게 pub
         sendToAllAuctionSubscribers(socketResponse);
@@ -30,13 +33,13 @@ public class BidStompService {
     private void sendToAllAuctionSubscribers(AuctionBidSocketResponse socketResponse) {
         AuctionBidSubscribersResponse subscribersResponse = auctionBidMapper.toSubscribersResponse(
             socketResponse);
-        simpMessagingTemplate.convertAndSend("/sub/auctions/" + socketResponse.getAuctionId(),
+        simpMessagingTemplate.convertAndSend(AUCTION_TOPIC_PREFIX + socketResponse.getAuctionId(),
             subscribersResponse);
     }
 
     private void sendToNewBidder(AuctionBidSocketResponse socketResponse) {
         AuctionBidderResponse bidderResponse = auctionBidMapper.toSuccessResponse("입찰에 성공했습니다.");
-        simpMessagingTemplate.convertAndSend("/sub/members/" + socketResponse.getNewBidderId(),
+        simpMessagingTemplate.convertAndSend(MEMBER_TOPIC_PREFIX + socketResponse.getNewBidderId(),
             bidderResponse);
     }
 
@@ -46,7 +49,7 @@ public class BidStompService {
             AuctionBidderResponse takeAuctionBidResponse = auctionBidMapper.toSuccessResponse(
                 "새로운 최고 입찰자로 인해 최고 입찰자의 자리가 빼앗겼습니다.");
             simpMessagingTemplate.convertAndSend(
-                "/sub/members/" + socketResponse.getPreviousBidderId(), takeAuctionBidResponse);
+                MEMBER_TOPIC_PREFIX + socketResponse.getPreviousBidderId(), takeAuctionBidResponse);
         }
     }
 }
