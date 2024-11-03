@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class StompInterceptor implements ChannelInterceptor {
 
     private static final String HEADER_ATTRIBUTE_NAME_AUTHORIZATION = "Authorization";
-    private final static String TOKEN_PREFIX = "Bearer ";
+    private static final String TOKEN_PREFIX = "Bearer ";
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -37,37 +37,42 @@ public class StompInterceptor implements ChannelInterceptor {
             .getAccessor(message, StompHeaderAccessor.class);
 
         StompCommand command = headerAccessor.getCommand();
-        if (StompCommand.CONNECT.equals(command)
-            || StompCommand.SEND.equals(command)) {
-
+        if (StompCommand.CONNECT.equals(command) || StompCommand.SEND.equals(command)) {
             String authorization = headerAccessor.getFirstNativeHeader(
                 HEADER_ATTRIBUTE_NAME_AUTHORIZATION);
 
-            if (Objects.nonNull(authorization) && authorization.startsWith(TOKEN_PREFIX)) {
-                String token = authorization.substring(TOKEN_PREFIX.length());
-
-                log.info("jwt 토큰 : {}", token);
-
-                try {
-                    jwtUtil.validateToken(token);
-
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(
-                        jwtUtil.extractClientId(token));
-
-                    CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        customUserDetails.getMember(), null, userDetails.getAuthorities());
-
-                    headerAccessor.setUser(authentication);
-                } catch (Exception e) {
-                    throw new MessageDeliveryException("유효하지 않는 토큰입니다.");
-                }
-            } else {
-                throw new MessageDeliveryException("토큰이 존재하지 않습니다.");
-            }
+            validateToken(authorization, headerAccessor);
         }
 
         return message;
+    }
+
+    private void validateToken(String authorization, StompHeaderAccessor headerAccessor) {
+        if (Objects.nonNull(authorization) && authorization.startsWith(TOKEN_PREFIX)) {
+            String token = authorization.substring(TOKEN_PREFIX.length());
+
+            log.info("jwt 토큰 : {}", token);
+
+            try {
+                jwtUtil.validateToken(token);
+                setAuthentication(headerAccessor, token);
+            } catch (Exception e) {
+                throw new MessageDeliveryException("유효하지 않는 토큰입니다.");
+            }
+        } else {
+            throw new MessageDeliveryException("토큰이 존재하지 않습니다.");
+        }
+    }
+
+    private void setAuthentication(StompHeaderAccessor headerAccessor, String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(
+            jwtUtil.extractClientId(token));
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+            customUserDetails.getMember(), null, userDetails.getAuthorities());
+
+        headerAccessor.setUser(authentication);
     }
 }
