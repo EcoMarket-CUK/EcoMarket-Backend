@@ -50,6 +50,12 @@ dependencies {
 	implementation 'com.github.mwiede:jsch:0.2.17'
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
+	// web socket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+	// Redisson
+	implementation 'org.redisson:redisson-spring-boot-starter:3.24.3'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'

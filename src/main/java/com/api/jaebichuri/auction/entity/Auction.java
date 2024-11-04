@@ -40,7 +40,7 @@ public class Auction extends BaseEntity {
 
     // 입찰자 수
     @Column(nullable = true)
-    private Long numOfBidders;
+    private Long numOfBidders = 0L;
 
     @Column(nullable = true)
     private Long finalBidPrice;
@@ -65,4 +65,8 @@ public class Auction extends BaseEntity {
     @OneToMany(mappedBy = "auction", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuctionBid> bids = new ArrayList<>();
 
+    public Auction updateNumOfBidders() {
+        this.numOfBidders++;
+        return this;
+    }
 }

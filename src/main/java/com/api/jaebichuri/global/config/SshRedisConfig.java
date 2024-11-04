@@ -2,6 +2,9 @@ package com.api.jaebichuri.global.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,5 +54,23 @@ public class SshRedisConfig {
         redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
 
         return redisTemplate;
+    }
+
+    @Bean
+    public RedissonClient redissonClient() {
+        String host = redisUrl;
+        int port = redisPort;
+
+        if (profile.equals("local")) {
+            Integer forwardedPort = initializer.buildSshConnection(redisUrl, redisPort);
+            host = "localhost";
+            port = forwardedPort;
+        }
+
+        Config config = new Config();
+        config.useSingleServer().setAddress("redis://" + host + ":" + port);
+
+        RedissonClient redissonClient = Redisson.create(config);
+        return  redissonClient;
     }
 }
