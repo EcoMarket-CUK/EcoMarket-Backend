@@ -78,12 +78,12 @@ public class ScreeningController {
             },
             responses = {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "COMMON200",
+                            responseCode = "COMMON200/ONGOING",
                             description = "진행 중인 경매 목록 조회 결과",
                             content = @Content(schema = @Schema(implementation = OngoingAuctionProductDto.class))
                     ),
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "COMMON200",
+                            responseCode = "COMMON200/ENDED",
                             description = "마감된 경매 목록 조회 결과",
                             content = @Content(schema = @Schema(implementation = EndedAuctionProductDto.class))
                     )
