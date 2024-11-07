@@ -133,8 +133,8 @@ public class AuctionBidService {
         BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(getTodayFormat(),
             todayVolume);
 
-        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(getTodayFormat(),
-            requestBidPrice);
+        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(
+            getTodayFormat(), requestBidPrice);
 
         return auctionBidMapper.toSocketResponse(requestBidPrice, responseCanBidPrice,
             auctionBid.getBidder().getId(), member.getId(), auction.getId(),
@@ -174,8 +174,8 @@ public class AuctionBidService {
         BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(getTodayFormat(),
             todayVolume);
 
-        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(getTodayFormat(),
-            requestBidPrice);
+        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(
+            getTodayFormat(), requestBidPrice);
 
         return auctionBidMapper.toSocketResponse(requestBidPrice, responseCanBidPrice,
             auctionBid.getBidder().getId(), member.getId(), auction.getId(), numOfParticipants,
@@ -204,9 +204,8 @@ public class AuctionBidService {
         LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN); // 오늘 자정
         LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);   // 오늘의 마지막 순간
 
-        String today = getTodayFormat();
-        return auctionBidRepository.countByAuctionAndCreatedAtBetween(auction,
-            startOfDay, endOfDay);
+        return auctionBidRepository.countByAuctionAndCreatedAtBetween(auction, startOfDay,
+            endOfDay);
     }
 
     private String getTodayFormat() {
