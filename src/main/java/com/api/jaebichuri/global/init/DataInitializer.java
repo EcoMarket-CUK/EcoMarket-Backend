@@ -175,7 +175,7 @@ public class DataInitializer implements CommandLineRunner {
                 .productName("Screening Product 1")
                 .productDescription("Screening Product 1에 대한 설명")
                 .desiredStartPrice(10000L)
-                .screeningStatus(AuctionScreeningStatus.PENDING)
+                .screeningStatus(AuctionScreeningStatus.PRICE_REVIEW)
                 .auctionCategory(AuctionCategory.CLOTHING)
                 .seller(member1)
                 .build();
@@ -184,7 +184,7 @@ public class DataInitializer implements CommandLineRunner {
                 .productName("Screening Product 2")
                 .productDescription("Screening Product 2에 대한 설명")
                 .desiredStartPrice(7000L)
-                .screeningStatus(AuctionScreeningStatus.PENDING)
+                .screeningStatus(AuctionScreeningStatus.PRODUCT_REVIEW)
                 .auctionCategory(AuctionCategory.INSTRUMENT)
                 .seller(member1)
                 .build();
