@@ -9,6 +9,6 @@ public enum AuctionStatus {
     ONGOING,
 
     //종료된 경매
-    FINISHED
+    ENDED
 
 }

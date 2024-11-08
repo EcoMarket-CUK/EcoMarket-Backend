@@ -25,4 +25,6 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 
     List<Auction> findBySellerAndAuctionStatus(Member member, AuctionStatus auctionStatus);
 
+    List<Auction> findByProduct_ProductNameContainingAndAuctionStatusOrderByCreatedAtDesc(String keyword, AuctionStatus status);
+
 }

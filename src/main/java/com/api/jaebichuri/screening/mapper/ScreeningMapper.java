@@ -12,7 +12,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ScreeningMapper {
 
-    @Mapping(target = "screeningStatus", constant = "PENDING")
+    @Mapping(target = "screeningStatus", constant = "PRICE_REVIEW")
     AuctionScreening toAuctionScreening(ScreeningDto screeningDto);
 
     @Mapping(source = "id", target = "screeningId")

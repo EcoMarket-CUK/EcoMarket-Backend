@@ -51,7 +51,13 @@ public class AuctionService {
         }
 
         return auctionMapper.toOngoingProductDtoList(ongoingAuctions);
+    }
 
+    @Transactional(readOnly = true)
+    public List<OngoingAuctionProductDto> searchOngoingAuctions(String keyword) {
+        List<Auction> auctions = auctionRepository.findByProduct_ProductNameContainingAndAuctionStatusOrderByCreatedAtDesc(keyword, AuctionStatus.ONGOING);
+
+        return auctionMapper.toOngoingProductDtoList(auctions);
     }
 
 }

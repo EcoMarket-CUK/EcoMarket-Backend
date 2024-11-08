@@ -1,6 +1,5 @@
 package com.api.jaebichuri.screening.service;
 
-import com.api.jaebichuri.auction.dto.OngoingAuctionProductDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
 import com.api.jaebichuri.auction.mapper.AuctionMapper;
@@ -9,7 +8,6 @@ import com.api.jaebichuri.global.response.code.status.ErrorStatus;
 import com.api.jaebichuri.global.response.exception.CustomException;
 import com.api.jaebichuri.global.service.AwsS3Service;
 import com.api.jaebichuri.member.entity.Member;
-import com.api.jaebichuri.screening.dto.EndedAuctionProductDto;
 import com.api.jaebichuri.screening.dto.ScreeningDto;
 import com.api.jaebichuri.screening.dto.ScreeningListDto;
 import com.api.jaebichuri.screening.entity.AuctionScreening;
@@ -61,7 +59,7 @@ public class ScreeningService {
     }
 
     @Transactional(readOnly = true)
-    public List<ScreeningListDto> getAllScreenings(Member member) {
+    public List<ScreeningListDto> getScreenings(Member member) {
         List<AuctionScreening> screenings = screeningRepository.findAllBySeller(member);
         return screeningMapper.toScreeningListDto(screenings);
     }
@@ -72,7 +70,7 @@ public class ScreeningService {
 
         if (status == AuctionStatus.ONGOING) {
             return auctionMapper.toOngoingProductDtoList(auctions);
-        } else if (status == AuctionStatus.FINISHED) {
+        } else if (status == AuctionStatus.ENDED) {
             return auctionMapper.toEndedProductDtoList(auctions);
         }
 
