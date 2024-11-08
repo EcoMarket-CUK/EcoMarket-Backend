@@ -9,6 +9,8 @@ import com.api.jaebichuri.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,29 +35,20 @@ public class AuthController {
      * 해당 핸들러로 카카오 소셜 로그인 요청 시 kakao 로그인 페이지 url 반환
      */
     @GetMapping("/oauth2/kakao")
-    @Operation(summary = "카카오 소셜 로그인 url API")
-    public ResponseEntity<ApiResponse<String>> getLoginUrl() {
+    @Operation(summary = "카카오 로그인 페이지로 리다이렉트 API")
+    public void getLoginUrl(HttpServletResponse response) throws IOException {
         String redirectUrl = authService.getRedirectUrl();
         log.info("{}", redirectUrl);
-        return ResponseEntity.ok(ApiResponse.onSuccess(redirectUrl));
+        response.sendRedirect(redirectUrl);
     }
 
-    /**
-     * 1. /oauth2/kakao 로 요청하면 리다이렉트 주소를 반환해주고
-     * 2. 해당 주소로 가서 로그인하면
-     * 3. 카카오 측에서 여기 핸들러로 인가 코드와 함께 리다이렉트해준다.
-     * 4. 인가 코드로 카카오 서버에 access token 요청 담당
-     */
     @GetMapping("/oauth2/kakao/code")
     @Operation(summary = "인가 코드 받아 처리하는 콜백 API")
     public ResponseEntity<ApiResponse<LoginSuccessDto>> callBack(
-        @RequestParam(required = false) String code)
-        throws JsonProcessingException {
+        @RequestParam(required = false) String code) throws JsonProcessingException {
         Map<String, String> memberInfo = authService.getMemberInfo(code);
-        return ResponseEntity.ok(
-            ApiResponse.onSuccess(memberService.login(memberInfo)));
+        return ResponseEntity.ok(ApiResponse.onSuccess(memberService.login(memberInfo)));
     }
-
 
     @GetMapping("/reissue")
     @Operation(summary = "access token 재발급 API")
