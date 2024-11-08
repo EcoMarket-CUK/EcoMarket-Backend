@@ -75,6 +75,14 @@ public class ScreeningService {
         return Collections.emptyList();
     }
 
+    private void validateImages(List<MultipartFile> images) {
+        if (images == null || images.isEmpty()) {
+            throw new CustomException(ErrorStatus._MIN_IMAGES_REQUIRED);
+        } else if (images.size() > 3) {
+            throw new CustomException(ErrorStatus._MAX_IMAGES_EXCEEDED);
+        }
+    }
+
     private List<AuctionScreeningImage> uploadImagesToS3(List<MultipartFile> images) throws IOException {
         List<AuctionScreeningImage> uploadedImages = new ArrayList<>();
 
@@ -91,14 +99,6 @@ public class ScreeningService {
         }
 
         return uploadedImages;
-    }
-
-    private void validateImages(List<MultipartFile> images) {
-        if (images == null || images.isEmpty()) {
-            throw new CustomException(ErrorStatus._MIN_IMAGES_REQUIRED);
-        } else if (images.size() > 3) {
-            throw new CustomException(ErrorStatus._MAX_IMAGES_EXCEEDED);
-        }
     }
 
 }
