@@ -3,7 +3,6 @@ package com.api.jaebichuri.screening.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@ToString
 @Entity
 @Getter
 @Builder
