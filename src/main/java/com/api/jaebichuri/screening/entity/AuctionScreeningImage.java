@@ -3,6 +3,7 @@ package com.api.jaebichuri.screening.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@ToString
 @Entity
 @Getter
 @Builder
@@ -19,13 +20,5 @@ public class AuctionScreeningImage {
 
     @Column(nullable = false)
     private Boolean isRepresentative;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auction_screening_id", nullable = false)
-    private AuctionScreening auctionScreening;
-
-    public void setAuctionScreening(AuctionScreening auctionScreening) {
-        this.auctionScreening = auctionScreening;
-    }
 
 }
