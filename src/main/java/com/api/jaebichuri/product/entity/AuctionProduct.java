@@ -28,7 +28,7 @@ public class AuctionProduct {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private Auction auction;
 
-    @OneToMany(mappedBy = "auctionProduct", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuctionProductImage> images = new ArrayList<>();
 
     public List<AuctionProductImage> getImages() {
