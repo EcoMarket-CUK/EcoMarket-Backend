@@ -34,7 +34,7 @@ public class AdminController {
                     )
             }
     )
-    @PutMapping("/role/{role}}")
+    @PutMapping("/role/{role}")
     public ResponseEntity<ApiResponse<String>> changeRole(@PathVariable Role role,
                                                           @AuthenticationPrincipal Member member) {
         return ResponseEntity.ok(ApiResponse.onSuccess(adminService.changeRole(member, role)));

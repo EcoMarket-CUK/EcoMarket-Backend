@@ -31,7 +31,7 @@ public class AuctionController {
     @Operation(
             summary = "경매 Top5 목록 조회 API",
             description = "가장 최근 생성된 경매 5개를 반환하는 API입니다. 진행 중인, 진행 예정인 경매 모두 해당 API를 사용하면 됩니다." +
-                          "둘의 responseCode가 같아 진행 중인 겸애 목록 조회 결과는 COMMON200/ONGOING, 진행 예정인 경매 목록 조회 결과는 COMMON200/UPCOMING로 표기했습니다.",
+                          "둘의 responseCode가 같아 진행 중인 경매 목록 조회 결과는 COMMON200/ONGOING, 진행 예정인 경매 목록 조회 결과는 COMMON200/UPCOMING로 표기했습니다.",
             parameters = {
                     @Parameter(name = "status", description = "경매 상태", required = true),
                     @Parameter(name = "category", description = "경매 카테고리", required = false)
