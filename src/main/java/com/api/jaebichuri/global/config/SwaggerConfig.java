@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    private static final String API_TITLE = "Echo Market API";
+    private static final String API_TITLE = "Eco Market API";
     private static final String API_VERSION = "1.0.0";
 
     @Bean
