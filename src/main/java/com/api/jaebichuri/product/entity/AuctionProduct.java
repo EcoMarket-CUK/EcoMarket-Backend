@@ -1,6 +1,7 @@
 package com.api.jaebichuri.product.entity;
 
 import com.api.jaebichuri.auction.entity.Auction;
+import com.api.jaebichuri.screening.entity.AuctionScreening;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,13 @@ public class AuctionProduct {
 
     public List<AuctionProductImage> getImages() {
         return images;
+    }
+
+    public static AuctionProduct fromScreening(AuctionScreening screening) {
+        return AuctionProduct.builder()
+                .productName(screening.getProductName())
+                .productDescription(screening.getProductDescription())
+                .build();
     }
 
 }
