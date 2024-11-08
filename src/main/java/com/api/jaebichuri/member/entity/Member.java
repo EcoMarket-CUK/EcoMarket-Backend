@@ -42,6 +42,10 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
     public void updateKakaoProfileNickname(String name) {
         this.kakaoProfileNickname = name;
     }
