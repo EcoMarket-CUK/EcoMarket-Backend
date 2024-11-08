@@ -5,16 +5,19 @@ import com.api.jaebichuri.auction.dto.UpcomingAuctionProductDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.product.entity.AuctionProductImage;
 import com.api.jaebichuri.screening.dto.EndedAuctionProductDto;
+import com.api.jaebichuri.screening.entity.AuctionScreeningImage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AuctionMapper {
 
     AuctionMapper INSTANCE = Mappers.getMapper(AuctionMapper.class);
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.productName", target = "productName")
@@ -24,8 +27,7 @@ public interface AuctionMapper {
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.productName", target = "productName")
-    @Mapping(source = "startTime", target = "startTime") // 시작 시간을 문자열로 변환
-    @Mapping(source = "startPrice", target = "startPrice") // 시작 가격을 문자열로 변환
+    @Mapping(source = "startTime", target = "startTime", dateFormat = "yyyy-MM-dd HH:mm:ss")
     @Mapping(target = "imageUrl", expression = "java(getRepresentativeImageUrl(auction.getProduct().getImages()))")
     UpcomingAuctionProductDto toUpcomingProductDto(Auction auction);
 
@@ -50,4 +52,3 @@ public interface AuctionMapper {
     }
 
 }
-
