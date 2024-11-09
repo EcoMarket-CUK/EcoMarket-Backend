@@ -9,6 +9,7 @@ import com.api.jaebichuri.member.service.MemberService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
@@ -44,10 +45,22 @@ public class AuthController {
 
     @GetMapping("/oauth2/kakao/code")
     @Operation(summary = "인가 코드 받아 처리하는 콜백 API")
-    public ResponseEntity<ApiResponse<LoginSuccessDto>> callBack(
-        @RequestParam(required = false) String code) throws JsonProcessingException {
+    public void callBack(
+        @RequestParam(required = false) String code, HttpServletResponse response)
+        throws IOException {
         Map<String, String> memberInfo = authService.getMemberInfo(code);
-        return ResponseEntity.ok(ApiResponse.onSuccess(memberService.login(memberInfo)));
+        LoginSuccessDto loginSuccessDto = memberService.login(memberInfo);
+
+        Cookie jwtCookie = new Cookie("accessToken",
+            loginSuccessDto.getTokenResponseDto().getAccessToken());
+        jwtCookie.setHttpOnly(true);
+//        jwtCookie.setSecure(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(3600);
+        response.addCookie(jwtCookie);
+        String redirectUrl =
+            "http://localhost:5173?isFirstLogin=" + loginSuccessDto.getIsFirstLogin();
+        response.sendRedirect(redirectUrl);
     }
 
     @GetMapping("/reissue")
