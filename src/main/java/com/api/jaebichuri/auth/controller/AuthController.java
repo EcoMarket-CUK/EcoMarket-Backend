@@ -51,15 +51,11 @@ public class AuthController {
         Map<String, String> memberInfo = authService.getMemberInfo(code);
         LoginSuccessDto loginSuccessDto = memberService.login(memberInfo);
 
-        Cookie jwtCookie = new Cookie("accessToken",
-            loginSuccessDto.getTokenResponseDto().getAccessToken());
-        jwtCookie.setHttpOnly(true);
-//        jwtCookie.setSecure(true);
-        jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(3600);
-        response.addCookie(jwtCookie);
         String redirectUrl =
-            "http://localhost:5173?isFirstLogin=" + loginSuccessDto.getIsFirstLogin();
+            "http://localhost:5173?isFirstLogin=" + loginSuccessDto.getIsFirstLogin()
+                + "&accessToken=" + loginSuccessDto.getTokenResponseDto().getAccessToken() +
+                "&refreshToken=" + loginSuccessDto.getTokenResponseDto().getRefreshToken();
+
         response.sendRedirect(redirectUrl);
     }
 
