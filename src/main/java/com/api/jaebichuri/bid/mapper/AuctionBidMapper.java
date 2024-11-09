@@ -2,12 +2,15 @@ package com.api.jaebichuri.bid.mapper;
 
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse;
+import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse.BidDatePriceResponse;
+import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse.BidVolumeResponse;
 import com.api.jaebichuri.bid.dto.AuctionBidSocketResponse;
 import com.api.jaebichuri.bid.dto.AuctionBidSocketResponse.AuctionBidSubscribersResponse;
 import com.api.jaebichuri.bid.dto.AuctionBidSocketResponse.AuctionBidderResponse;
 import com.api.jaebichuri.bid.entity.AuctionBid;
 import com.api.jaebichuri.global.response.code.status.ErrorStatus;
 import com.api.jaebichuri.global.response.code.status.SuccessStatus;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,8 +22,19 @@ public interface AuctionBidMapper {
     @Mapping(source = "auctionBid.bidPrice", target = "topBidPrice")
     @Mapping(source = "canBidPrice", target = "canBidPrice")
     @Mapping(source = "numOfBidders", target = "numOfBidders")
+    @Mapping(source = "bidDatePriceResponseList", target = "top3BidDatePriceList")
+    @Mapping(source = "bidVolumeResponseList", target = "bidVolumeResponseList")
     AuctionBidHttpResponse toHttpResponse(Auction auction, AuctionBid auctionBid,
-        Long canBidPrice, Long numOfBidders);
+        Long canBidPrice, Long numOfBidders, List<BidDatePriceResponse> bidDatePriceResponseList,
+        List<BidVolumeResponse> bidVolumeResponseList);
+
+    @Mapping(source = "bidDate", target = "bidDate")
+    @Mapping(source = "bidPrice", target = "bidPrice")
+    BidDatePriceResponse toBidDatePriceResponse(String bidDate, Long bidPrice);
+
+    @Mapping(source = "date", target = "date")
+    @Mapping(source = "volume", target = "volume")
+    BidVolumeResponse toBidVolumeResponse(String date, Long volume);
 
     @Mapping(source = "auction.startPrice", target = "startBidPrice")
     @Mapping(source = "auction.startPrice", target = "canBidPrice")
@@ -35,8 +49,11 @@ public interface AuctionBidMapper {
     @Mapping(source = "newBidderId", target = "newBidderId")
     @Mapping(source = "auctionId", target = "auctionId")
     @Mapping(source = "numOfBidders", target = "numOfBidders")
+    @Mapping(source = "bidVolumeResponse", target = "bidVolumeResponse")
+    @Mapping(source = "bidDatePriceResponse", target = "bidDatePriceResponse")
     AuctionBidSocketResponse toSocketResponse(Long topBidPrice, Long canBidPrice,
-        Long previousBidderId, Long newBidderId, Long auctionId, Long numOfBidders);
+        Long previousBidderId, Long newBidderId, Long auctionId, Long numOfBidders,
+        BidVolumeResponse bidVolumeResponse, BidDatePriceResponse bidDatePriceResponse);
 
     @Mapping(target = "isSuccess", constant = "true")
     @Mapping(target = "code", expression = "java(getSuccessCode())")
@@ -51,6 +68,8 @@ public interface AuctionBidMapper {
     @Mapping(source = "socketResponse.topBidPrice", target = "topBidPrice")
     @Mapping(source = "socketResponse.canBidPrice", target = "canBidPrice")
     @Mapping(source = "socketResponse.numOfBidders", target = "numOfBidders")
+    @Mapping(source = "socketResponse.bidVolumeResponse", target = "bidVolumeResponse")
+    @Mapping(source = "socketResponse.bidDatePriceResponse", target = "bidDatePriceResponse")
     AuctionBidSubscribersResponse toSubscribersResponse(AuctionBidSocketResponse socketResponse);
 
     default String getSuccessCode() {

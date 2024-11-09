@@ -3,6 +3,8 @@ package com.api.jaebichuri.bid.service;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.auction.repository.AuctionRepository;
 import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse;
+import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse.BidDatePriceResponse;
+import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse.BidVolumeResponse;
 import com.api.jaebichuri.bid.dto.AuctionBidRequestDto;
 import com.api.jaebichuri.bid.dto.AuctionBidSocketResponse;
 import com.api.jaebichuri.bid.entity.AuctionBid;
@@ -15,7 +17,14 @@ import com.api.jaebichuri.global.response.exception.CustomSocketException;
 import com.api.jaebichuri.member.entity.Member;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,11 +44,16 @@ public class AuctionBidService {
 
         Long numOfBidders = auction.getNumOfBidders();
 
+        List<BidDatePriceResponse> top3BidDatePriceList = getBidDatePriceResponseList(
+            auction);
+
+        List<BidVolumeResponse> bidVolumeResponseList = getVolumeResponseList(auction);
+
         return auctionBidRepository.findTopByAuctionOrderByBidPriceDesc(auction)
             .map(topAuctionBid -> {
                 Long canBidPrice = calculateCanBidPrice(topAuctionBid.getBidPrice());
                 return auctionBidMapper.toHttpResponse(auction, topAuctionBid, canBidPrice,
-                    numOfBidders);
+                    numOfBidders, top3BidDatePriceList, bidVolumeResponseList);
             }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction));
     }
 
@@ -70,6 +84,37 @@ public class AuctionBidService {
         return handleNewAuctionBid(member, auction, requestBidPrice);
     }
 
+    private List<BidDatePriceResponse> getBidDatePriceResponseList(Auction auction) {
+        List<AuctionBid> top3ByAuctionBid = auctionBidRepository.findTop3ByAuctionOrderByBidPriceDesc(
+            auction);
+
+        List<BidDatePriceResponse> top3BidDatePriceList = top3ByAuctionBid.stream()
+            .map(auctionBid -> auctionBidMapper.toBidDatePriceResponse(
+                auctionBid.getCreatedAt().format(DateTimeFormatter.ofPattern("MM/dd HH:mm")),
+                auctionBid.getBidPrice())
+            ).toList();
+        return top3BidDatePriceList;
+    }
+
+    private List<BidVolumeResponse> getVolumeResponseList(Auction auction) {
+        List<AuctionBid> auctionBidList = auctionBidRepository.findAllByAuction(auction);
+
+        Map<String, Long> volumeByDate = auctionBidList.stream()
+            .collect(Collectors.groupingBy(
+                auctionBid -> auctionBid.getCreatedAt()
+                    .format(DateTimeFormatter.ofPattern("MM/dd")),
+                Collectors.counting()
+            ));
+
+        List<BidVolumeResponse> bidVolumeResponseList = new ArrayList<>();
+        volumeByDate.forEach((date, volume) -> {
+            BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(date,
+                volume);
+            bidVolumeResponseList.add(bidVolumeResponse);
+        });
+        return bidVolumeResponseList;
+    }
+
     private AuctionBidSocketResponse handleFirstAuctionBid(Member member, Auction auction,
         Long requestBidPrice) {
         Long startPrice = auction.getStartPrice();
@@ -83,9 +128,18 @@ public class AuctionBidService {
 
         Long responseCanBidPrice = calculateCanBidPrice(auctionBid.getBidPrice());
 
+        Long todayVolume = getTodayVolume(auction);
+
+        BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(getTodayFormat(),
+            todayVolume);
+
+        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(
+            getTodayFormat(), requestBidPrice);
+
         return auctionBidMapper.toSocketResponse(requestBidPrice, responseCanBidPrice,
             auctionBid.getBidder().getId(), member.getId(), auction.getId(),
-            auction.updateNumOfBidders().getNumOfBidders());
+            auction.updateNumOfBidders().getNumOfBidders(), bidVolumeResponse,
+            bidDatePriceResponse);
     }
 
     private void validateAuctionBid(Member member, AuctionBid topAuctionBid, Long requestBidPrice) {
@@ -115,8 +169,17 @@ public class AuctionBidService {
         Long numOfParticipants = isNotNewBidder ? auction.getNumOfBidders()
             : auction.updateNumOfBidders().getNumOfBidders();
 
+        Long todayVolume = getTodayVolume(auction);
+
+        BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(getTodayFormat(),
+            todayVolume);
+
+        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(
+            getTodayFormat(), requestBidPrice);
+
         return auctionBidMapper.toSocketResponse(requestBidPrice, responseCanBidPrice,
-            auctionBid.getBidder().getId(), member.getId(), auction.getId(), numOfParticipants);
+            auctionBid.getBidder().getId(), member.getId(), auction.getId(), numOfParticipants,
+            bidVolumeResponse, bidDatePriceResponse);
     }
 
     private Long calculateCanBidPrice(Long nowBestBidPrice) {
@@ -135,5 +198,17 @@ public class AuctionBidService {
             .build();
         auctionBidRepository.save(auctionBid);
         return auctionBid;
+    }
+
+    private Long getTodayVolume(Auction auction) {
+        LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN); // 오늘 자정
+        LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);   // 오늘의 마지막 순간
+
+        return auctionBidRepository.countByAuctionAndCreatedAtBetween(auction, startOfDay,
+            endOfDay);
+    }
+
+    private String getTodayFormat() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM/dd"));
     }
 }
