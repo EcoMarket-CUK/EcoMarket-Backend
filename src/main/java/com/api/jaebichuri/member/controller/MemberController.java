@@ -1,5 +1,6 @@
 package com.api.jaebichuri.member.controller;
 
+import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.dto.MemberInfoRequestDto;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.service.MemberService;
@@ -26,9 +27,9 @@ public class MemberController {
 
     @PostMapping("/info")
     @Operation(summary = "사용자 추가 정보 입력 API")
-    public ResponseEntity<String> saveMemberInfo(@AuthenticationPrincipal Member member,
+    public ResponseEntity<ApiResponse<String>> saveMemberInfo(@AuthenticationPrincipal Member member,
         @Valid @RequestBody MemberInfoRequestDto requestDto) {
         memberService.saveMemberInfo(member, requestDto);
-        return ResponseEntity.ok("사용자 정보 저장 완료");
+        return ResponseEntity.ok(ApiResponse.onSuccess("사용자 정보 저장 완료"));
     }
 }
