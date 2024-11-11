@@ -37,7 +37,7 @@ public class AdminService {
             return "Member is already a " + newRole + ".";
         }
 
-        member.setRole(newRole);
+        member.updateRole(newRole);
         memberRepository.save(member);
 
         return "Member successfully promoted to " + newRole + ".";
@@ -48,7 +48,7 @@ public class AdminService {
         AuctionScreening screening = screeningRepository.findById(screeningId)
                 .orElseThrow(() -> new CustomException(ErrorStatus._SCREENING_NOT_FOUND));
 
-        screening.setScreeningStatus(newStatus);
+        screening.updateScreeningStatus(newStatus);
         screeningRepository.save(screening);
 
         if(newStatus == AuctionScreeningStatus.INSPECTION_COMPLETED) {

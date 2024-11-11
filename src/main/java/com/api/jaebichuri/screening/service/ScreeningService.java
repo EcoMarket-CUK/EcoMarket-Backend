@@ -42,13 +42,13 @@ public class ScreeningService {
         validateImages(images);
 
         AuctionScreening auctionScreening = screeningMapper.toAuctionScreening(screeningDto);
-        auctionScreening.setSeller(member);
-        auctionScreening.setScreeningStatus(AuctionScreeningStatus.PRICE_REVIEW);
+        auctionScreening.updateSeller(member);
+        auctionScreening.updateScreeningStatus(AuctionScreeningStatus.PRICE_REVIEW);
 
         List<AuctionScreeningImage> uploadedImages = uploadImagesToS3(images);
 
         if (!uploadedImages.isEmpty()) {
-            auctionScreening.setImages(uploadedImages);
+            auctionScreening.updateImages(uploadedImages);
         }
 
         screeningRepository.save(auctionScreening);

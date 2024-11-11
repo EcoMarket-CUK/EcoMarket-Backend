@@ -52,15 +52,15 @@ public class AuctionScreening extends BaseEntity {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuctionScreeningImage> images = new ArrayList<>();
 
-    public void setSeller(Member seller) {
+    public void updateSeller(Member seller) {
             this.seller = seller;
         }
 
-    public void setImages(List<AuctionScreeningImage> images) {
+    public void updateImages(List<AuctionScreeningImage> images) {
         this.images = images;
     }
 
-    public void setScreeningStatus(AuctionScreeningStatus screeningStatus) {
+    public void updateScreeningStatus(AuctionScreeningStatus screeningStatus) {
         this.screeningStatus = screeningStatus;
     }
 
