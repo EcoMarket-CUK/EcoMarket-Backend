@@ -72,7 +72,9 @@ public class ScreeningController {
 
     @Operation(
             summary = "진행 중인, 마감된 경매 목록 조회 API",
-            description = "사용자가 등록한 경매 상품 중 진행 중이거나 마감된 경매를 반환하는 API입니다. 진행 중인, 마감된 경매 모두 해당 API를 사용하면 됩니다. 해당 API는 사용자 인증이 요구됩니다.",
+            description = "사용자가 등록한 경매 상품 중 진행 중이거나 마감된 경매를 반환하는 API입니다. 진행 중인, 마감된 경매 모두 해당 API를 사용하면 됩니다. " +
+                          "둘의 responseCode가 같아 진행 중인 경매 목록 조회 결과는 COMMON200/ONGOING, 진행 예정인 경매 목록 조회 결과는 COMMON200/UPCOMING로 표기했습니다. " +
+                          "해당 API는 사용자 인증이 요구됩니다.",
             parameters = {
                     @Parameter(name = "status", description = "경매 상태", required = true)
             },

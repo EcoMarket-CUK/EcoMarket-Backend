@@ -6,6 +6,7 @@ import com.api.jaebichuri.bid.entity.AuctionBid;
 import com.api.jaebichuri.global.entity.BaseEntity;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.product.entity.AuctionProduct;
+import com.api.jaebichuri.screening.entity.AuctionScreening;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -69,4 +70,26 @@ public class Auction extends BaseEntity {
         this.numOfBidders++;
         return this;
     }
+
+    public void startAuction() {
+        this.auctionStatus = AuctionStatus.ONGOING;
+    }
+
+    public void endAuction() {
+        this.auctionStatus = AuctionStatus.ENDED;
+        this.isBidSuccessful = (this.finalBidPrice != null);
+    }
+
+    public static Auction fromScreening(AuctionScreening screening, AuctionProduct product) {
+        return Auction.builder()
+                .startPrice(screening.getDesiredStartPrice())
+                .startTime(screening.getStartTime())
+                .endTime(screening.getEndTime())
+                .auctionStatus(AuctionStatus.UPCOMING)
+                .auctionCategory(screening.getAuctionCategory())
+                .seller(screening.getSeller())
+                .product(product)
+                .build();
+    }
+
 }

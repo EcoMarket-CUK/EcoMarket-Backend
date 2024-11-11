@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,12 @@ public class AuctionScreening extends BaseEntity {
     @Column(nullable = false)
     private Long desiredStartPrice;
 
+    @Column(nullable = false)
+    private LocalDateTime startTime;
+
+    @Column(nullable = false)
+    private LocalDateTime endTime;
+
     @Enumerated(EnumType.STRING)
     private AuctionScreeningStatus screeningStatus;
 
@@ -42,16 +49,19 @@ public class AuctionScreening extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member seller;
 
-    @OneToMany(mappedBy = "auctionScreening", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuctionScreeningImage> images = new ArrayList<>();
 
-    public void setSeller(Member seller) {
-        this.seller = seller;
+    public void updateSeller(Member seller) {
+            this.seller = seller;
+        }
+
+    public void updateImages(List<AuctionScreeningImage> images) {
+        this.images = images;
     }
 
-    public void addImage(AuctionScreeningImage image) {
-        images.add(image);
-        image.setAuctionScreening(this);
+    public void updateScreeningStatus(AuctionScreeningStatus screeningStatus) {
+        this.screeningStatus = screeningStatus;
     }
 
 }

@@ -7,6 +7,7 @@ import com.api.jaebichuri.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,5 +27,9 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
     List<Auction> findBySellerAndAuctionStatus(Member member, AuctionStatus auctionStatus);
 
     List<Auction> findByProduct_ProductNameContainingAndAuctionStatusOrderByCreatedAtDesc(String keyword, AuctionStatus status);
+
+    List<Auction> findByAuctionStatusAndStartTimeLessThanEqual(AuctionStatus auctionStatus, LocalDateTime time);
+
+    List<Auction> findByAuctionStatusAndEndTimeLessThanEqual(AuctionStatus auctionStatus, LocalDateTime time);
 
 }

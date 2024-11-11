@@ -2,24 +2,30 @@ package com.api.jaebichuri.product.mapper;
 
 import com.api.jaebichuri.product.dto.UpcomingProductDetailsDto;
 import com.api.jaebichuri.auction.entity.Auction;
+import com.api.jaebichuri.product.entity.AuctionProductImage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
 
-import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
     ProductMapper INSTANCE = Mappers.getMapper(ProductMapper.class);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Mapping(source = "product.id", target = "productId")
     @Mapping(source = "product.productName", target = "productName")
     @Mapping(source = "product.productDescription", target = "productDescription")
-    @Mapping(target = "startTime", expression = "java(auction.getStartTime().format(formatter))")
-    @Mapping(target=  "endTime", expression = "java(auction.getEndTime().format(formatter))")
     @Mapping(source = "seller.nickname", target = "sellerNickname")
+    @Mapping(target = "images", expression = "java(filterRepresentativeImages(auction.getProduct().getImages()))")
     UpcomingProductDetailsDto auctionToUpcomingAuctionProductDto(Auction auction);
+
+    default List<String> filterRepresentativeImages(List<AuctionProductImage> images) {
+        return images.stream()
+                .map(AuctionProductImage::getImageUrl)
+                .collect(Collectors.toList());
+    }
 
 }

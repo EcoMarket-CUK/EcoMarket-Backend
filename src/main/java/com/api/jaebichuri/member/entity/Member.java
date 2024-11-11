@@ -46,6 +46,8 @@ public class Member {
         this.kakaoProfileNickname = name;
     }
 
+    public void updateRole(Role newRole) { this.role = newRole; }
+
     public void updateInfo(String name, String nickname, String zipcode, String address) {
         this.name = name;
         this.nickname = nickname;
