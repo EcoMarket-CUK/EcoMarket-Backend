@@ -2,14 +2,13 @@ package com.api.jaebichuri.auth.controller;
 
 import com.api.jaebichuri.auth.dto.LoginSuccessDto;
 import com.api.jaebichuri.auth.dto.TokenResponseDto;
+import com.api.jaebichuri.auth.jwt.JwtUtil;
 import com.api.jaebichuri.auth.service.AuthService;
 import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.service.MemberService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Map;
@@ -71,5 +70,14 @@ public class AuthController {
     public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member) {
         authService.deleteRefreshToken(member);
         return ResponseEntity.ok(ApiResponse.onSuccess("로그아웃 성공"));
+    }
+
+
+    private final JwtUtil jwtUtil;
+    @Deprecated
+    @GetMapping("/test/login")
+    public ResponseEntity<ApiResponse<String>> getTestAccessToken(@RequestParam String clientId) {
+        String token = jwtUtil.generateAccessToken(clientId);
+        return ResponseEntity.ok(ApiResponse.onSuccess(token));
     }
 }

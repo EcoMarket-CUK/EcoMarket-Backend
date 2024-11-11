@@ -81,7 +81,7 @@ public class AuctionBidService {
         // 입찰 가능한지 조건 검증
         validateAuctionBid(member, topAuctionBid, requestBidPrice);
 
-        return handleNewAuctionBid(member, auction, requestBidPrice);
+        return handleNewAuctionBid(member, auction, requestBidPrice, topAuctionBid);
     }
 
     private List<BidDatePriceResponse> getBidDatePriceResponseList(Auction auction) {
@@ -159,7 +159,7 @@ public class AuctionBidService {
     }
 
     private AuctionBidSocketResponse handleNewAuctionBid(Member member, Auction auction,
-        Long requestBidPrice) {
+        Long requestBidPrice, AuctionBid previousTopAuctionBid) {
         boolean isNotNewBidder = auctionBidRepository.existsByBidderAndAuction(member, auction);
 
         AuctionBid auctionBid = saveAuctionBid(member, auction, requestBidPrice);
@@ -178,7 +178,7 @@ public class AuctionBidService {
             getTodayFormat(), requestBidPrice);
 
         return auctionBidMapper.toSocketResponse(requestBidPrice, responseCanBidPrice,
-            auctionBid.getBidder().getId(), member.getId(), auction.getId(), numOfParticipants,
+            previousTopAuctionBid.getBidder().getId(), member.getId(), auction.getId(), numOfParticipants,
             bidVolumeResponse, bidDatePriceResponse);
     }
 
