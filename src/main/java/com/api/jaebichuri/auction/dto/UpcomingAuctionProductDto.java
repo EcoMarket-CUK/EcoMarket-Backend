@@ -1,5 +1,6 @@
 package com.api.jaebichuri.auction.dto;
 
+import com.api.jaebichuri.auction.enums.AuctionCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,9 @@ public class UpcomingAuctionProductDto {
 
     @Schema(description = "입찰 시작가", example = "10000")
     private String startPrice;
+
+    @Schema(description = "경매 카테고리", example = "CLOTHING")
+    private AuctionCategory auctionCategory;
 
     @Schema(description = "상품 이미지 URL", example = "https://example.com/image.jpg")
     private String imageUrl;
