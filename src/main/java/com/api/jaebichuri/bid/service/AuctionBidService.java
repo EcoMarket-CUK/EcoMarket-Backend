@@ -84,7 +84,7 @@ public class AuctionBidService {
         return handleNewAuctionBid(member, auction, requestBidPrice);
     }
 
-    private List<BidDatePriceResponse> getBidDatePriceResponseList(Auction auction) {
+    public List<BidDatePriceResponse> getBidDatePriceResponseList(Auction auction) {
         List<AuctionBid> top3ByAuctionBid = auctionBidRepository.findTop3ByAuctionOrderByBidPriceDesc(
             auction);
 
@@ -96,7 +96,7 @@ public class AuctionBidService {
         return top3BidDatePriceList;
     }
 
-    private List<BidVolumeResponse> getVolumeResponseList(Auction auction) {
+    public List<BidVolumeResponse> getVolumeResponseList(Auction auction) {
         List<AuctionBid> auctionBidList = auctionBidRepository.findAllByAuction(auction);
 
         Map<String, Long> volumeByDate = auctionBidList.stream()
