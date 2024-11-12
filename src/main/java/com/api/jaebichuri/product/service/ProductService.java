@@ -35,6 +35,10 @@ public class ProductService {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
 
+        if (!auction.getSeller().equals(member)) {
+            throw new CustomException(ErrorStatus._ACCESS_DENIED);
+        }
+
         EndedProductDetailsDto endedProductDetailsDto = productMapper.toEndedProductDetailsDto(auction);
 
         endedProductDetailsDto.setTop3BidDatePrice(auctionBidService.getBidDatePriceResponseList(auction));
