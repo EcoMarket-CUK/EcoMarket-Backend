@@ -56,7 +56,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/oauth2/kakao/**").permitAll()
                         .requestMatchers("/ws").permitAll()
-                        .requestMatchers("/auctions/**", "/products/**").permitAll()
+                        .requestMatchers("/auctions/**", "/products/upcoming/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/admin/{screeningId}/status").hasAuthority("ADMIN")
                         .anyRequest().hasAnyAuthority("USER", "ADMIN")
                 );
