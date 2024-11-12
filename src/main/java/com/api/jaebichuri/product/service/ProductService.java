@@ -1,5 +1,8 @@
 package com.api.jaebichuri.product.service;
 
+import com.api.jaebichuri.bid.service.AuctionBidService;
+import com.api.jaebichuri.member.entity.Member;
+import com.api.jaebichuri.product.dto.EndedProductDetailsDto;
 import com.api.jaebichuri.product.dto.UpcomingProductDetailsDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.auction.enums.AuctionStatus;
@@ -17,6 +20,7 @@ public class ProductService {
 
     private final AuctionRepository auctionRepository;
     private final ProductMapper productMapper;
+    private final AuctionBidService auctionBidService;
 
     @Transactional(readOnly = true)
     public UpcomingProductDetailsDto getUpcomingAuctionProductDetails(Long auctionId) {
@@ -24,6 +28,19 @@ public class ProductService {
                 .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
 
         return productMapper.auctionToUpcomingAuctionProductDto(auction);
+    }
+
+    @Transactional(readOnly = true)
+    public EndedProductDetailsDto getEndedAuctionDetails(Long auctionId, Member member) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
+
+        EndedProductDetailsDto endedProductDetailsDto = productMapper.toEndedProductDetailsDto(auction);
+
+        endedProductDetailsDto.setTop3BidDatePrice(auctionBidService.getBidDatePriceResponseList(auction));
+        endedProductDetailsDto.setBidVolumeByDate(auctionBidService.getVolumeResponseList(auction));
+
+        return endedProductDetailsDto;
     }
 
 }

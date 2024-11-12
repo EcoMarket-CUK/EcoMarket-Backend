@@ -1,5 +1,6 @@
 package com.api.jaebichuri.product.mapper;
 
+import com.api.jaebichuri.product.dto.EndedProductDetailsDto;
 import com.api.jaebichuri.product.dto.UpcomingProductDetailsDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.product.entity.AuctionProductImage;
@@ -21,6 +22,13 @@ public interface ProductMapper {
     @Mapping(source = "seller.nickname", target = "sellerNickname")
     @Mapping(target = "images", expression = "java(filterRepresentativeImages(auction.getProduct().getImages()))")
     UpcomingProductDetailsDto auctionToUpcomingAuctionProductDto(Auction auction);
+
+    @Mapping(source = "product.id", target = "productId")
+    @Mapping(source = "product.productName", target = "productName")
+    @Mapping(target = "productDescription", source = "product.productDescription")
+    @Mapping(source = "seller.nickname", target = "sellerNickname")
+    @Mapping(source = "product.images", target = "images")
+    EndedProductDetailsDto toEndedProductDetailsDto(Auction auction);
 
     default List<String> filterRepresentativeImages(List<AuctionProductImage> images) {
         return images.stream()
