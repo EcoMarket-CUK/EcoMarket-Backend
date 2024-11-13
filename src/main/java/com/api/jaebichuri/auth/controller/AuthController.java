@@ -8,6 +8,8 @@ import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -25,25 +27,28 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "인증 인가 API")
+@Tag(name = "Auth", description = "인증 인가 관련 API")
 public class AuthController {
 
     private final AuthService authService;
     private final MemberService memberService;
 
-    /**
-     * 해당 핸들러로 카카오 소셜 로그인 요청 시 kakao 로그인 페이지 url 반환
-     */
+    @Operation(
+        summary = "카카오 로그인 페이지로 리다이렉트 API",
+        description = "카카오 로그인 페이지로 리다이렉트하는 API입니다."
+    )
     @GetMapping("/oauth2/kakao")
-    @Operation(summary = "카카오 로그인 페이지로 리다이렉트 API")
     public void getLoginUrl(HttpServletResponse response) throws IOException {
         String redirectUrl = authService.getRedirectUrl();
         log.info("{}", redirectUrl);
         response.sendRedirect(redirectUrl);
     }
 
+    @Operation(
+        summary = "인가 코드를 받아 처리하는 API",
+        description = "인가 코드 받아 처리하는 API입니다."
+    )
     @GetMapping("/oauth2/kakao/code")
-    @Operation(summary = "인가 코드 받아 처리하는 콜백 API")
     public void callBack(
         @RequestParam(required = false) String code, HttpServletResponse response)
         throws IOException {
@@ -58,15 +63,35 @@ public class AuthController {
         response.sendRedirect(redirectUrl);
     }
 
+    @Operation(
+        summary = "access token 재발급 API",
+        description = "access token 재발급하는 API입니다. 해당 API는 헤더에 refreshToken과 함께 요청해야합니다.",
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "COMMON200",
+                description = "재발급된 acessToken과 기존의 refreshToken을 응답",
+                content = @Content(schema = @Schema(implementation = TokenResponseDto.class))
+            )
+        }
+    )
     @GetMapping("/reissue")
-    @Operation(summary = "access token 재발급 API")
     public ResponseEntity<ApiResponse<TokenResponseDto>> reissue(
         @RequestAttribute("refresh") String refreshToken) {
         return ResponseEntity.ok(ApiResponse.onSuccess(authService.reissue(refreshToken)));
     }
 
+    @Operation(
+        summary = "로그아웃 API",
+        description = "로그아웃 API입니다. 해당 API는 사용자 인증이 요구됩니다.",
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "COMMON200",
+                description = "로그아웃 결과 반환",
+                content = @Content(schema = @Schema(implementation = String.class))
+            )
+        }
+    )
     @PostMapping("/logout")
-    @Operation(summary = "로그아웃 API")
     public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Member member) {
         authService.deleteRefreshToken(member);
         return ResponseEntity.ok(ApiResponse.onSuccess("로그아웃 성공"));
