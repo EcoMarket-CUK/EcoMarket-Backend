@@ -18,6 +18,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,8 +48,9 @@ public class AuctionBidController {
     )
     @GetMapping("/auctions/{auctionId}/auction-bid")
     public ResponseEntity<ApiResponse<AuctionBidHttpResponse>> getAuctionBid(
-        @PathVariable Long auctionId) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(auctionBidService.getAuctionBid(auctionId)));
+        @PathVariable Long auctionId, @AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(
+            ApiResponse.onSuccess(auctionBidService.getAuctionBid(auctionId, member)));
     }
 
     @MessageMapping("/bid/auctions/{auctionId}")

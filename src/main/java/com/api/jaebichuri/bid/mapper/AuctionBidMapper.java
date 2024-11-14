@@ -24,9 +24,10 @@ public interface AuctionBidMapper {
     @Mapping(source = "numOfBidders", target = "numOfBidders")
     @Mapping(source = "bidDatePriceResponseList", target = "top3BidDatePriceList")
     @Mapping(source = "bidVolumeResponseList", target = "bidVolumeResponseList")
+    @Mapping(source = "memberId", target = "memberId")
     AuctionBidHttpResponse toHttpResponse(Auction auction, AuctionBid auctionBid,
         Long canBidPrice, Long numOfBidders, List<BidDatePriceResponse> bidDatePriceResponseList,
-        List<BidVolumeResponse> bidVolumeResponseList);
+        List<BidVolumeResponse> bidVolumeResponseList, Long memberId);
 
     @Mapping(source = "bidDate", target = "bidDate")
     @Mapping(source = "bidPrice", target = "bidPrice")
@@ -41,7 +42,8 @@ public interface AuctionBidMapper {
     @Mapping(source = "auction.endTime", target = "endTime")
     @Mapping(constant = "0L", target = "topBidPrice")
     @Mapping(constant = "0L", target = "numOfBidders")
-    AuctionBidHttpResponse toHttpResponse(Auction auction);
+    @Mapping(source = "memberId", target = "memberId")
+    AuctionBidHttpResponse toHttpResponse(Auction auction, Long memberId);
 
     @Mapping(source = "topBidPrice", target = "topBidPrice")
     @Mapping(source = "canBidPrice", target = "canBidPrice")

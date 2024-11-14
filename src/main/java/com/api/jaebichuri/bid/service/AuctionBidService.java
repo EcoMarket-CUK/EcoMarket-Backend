@@ -38,7 +38,7 @@ public class AuctionBidService {
     private final AuctionRepository auctionRepository;
     private final AuctionBidMapper auctionBidMapper;
 
-    public AuctionBidHttpResponse getAuctionBid(Long auctionId) {
+    public AuctionBidHttpResponse getAuctionBid(Long auctionId, Member member) {
         Auction auction = auctionRepository.findById(auctionId)
             .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
 
@@ -53,8 +53,8 @@ public class AuctionBidService {
             .map(topAuctionBid -> {
                 Long canBidPrice = calculateCanBidPrice(topAuctionBid.getBidPrice());
                 return auctionBidMapper.toHttpResponse(auction, topAuctionBid, canBidPrice,
-                    numOfBidders, top3BidDatePriceList, bidVolumeResponseList);
-            }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction));
+                    numOfBidders, top3BidDatePriceList, bidVolumeResponseList, member.getId());
+            }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction, member.getId()));
     }
 
     @DistributedLock(key = "auctionId")

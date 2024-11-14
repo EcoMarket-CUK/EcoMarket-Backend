@@ -25,6 +25,8 @@ public class AuctionBidHttpResponse {
     private List<BidDatePriceResponse> top3BidDatePriceList;
     @Schema(description = "일자별 거래량")
     private List<BidVolumeResponse> bidVolumeResponseList;
+    @Schema(description = "현재 사용자 pk값")
+    private Long memberId;
 
     @Getter
     @Builder
