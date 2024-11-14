@@ -2,6 +2,7 @@ package com.api.jaebichuri.product.controller;
 
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.product.dto.EndedProductDetailsDto;
+import com.api.jaebichuri.product.dto.OngoingProductDetailsDto;
 import com.api.jaebichuri.product.dto.UpcomingProductDetailsDto;
 import com.api.jaebichuri.product.service.ProductService;
 import com.api.jaebichuri.global.response.ApiResponse;
@@ -26,43 +27,67 @@ public class ProductController {
     private final ProductService productService;
 
     @Operation(
-            summary = "진행 예정 경매 상품 상세 정보 조회 API",
-            description = "진행 예정 경매에 대한 상세 정보를 반환하는 API입니다.",
-            parameters = {
-                    @Parameter(name = "auctionId", description = "진행 예정 경매 식별자 ID", required = true)
-            },
-            responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "COMMON200",
-                            description = "진행 예정 경매 물품 상세 정보 조회 결과",
-                            content = @Content(schema = @Schema(implementation = UpcomingProductDetailsDto.class))
-                    )
-            }
+        summary = "진행 예정 경매 상품 상세 정보 조회 API",
+        description = "진행 예정 경매에 대한 상세 정보를 반환하는 API입니다.",
+        parameters = {
+            @Parameter(name = "auctionId", description = "진행 예정 경매 식별자 ID", required = true)
+        },
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "COMMON200",
+                description = "진행 예정 경매 물품 상세 정보 조회 결과",
+                content = @Content(schema = @Schema(implementation = UpcomingProductDetailsDto.class))
+            )
+        }
     )
     @GetMapping("/upcoming/{auctionId}")
-    public ResponseEntity<ApiResponse<UpcomingProductDetailsDto>> getUpcomingAuctionProductDetails(@PathVariable Long auctionId) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(productService.getUpcomingAuctionProductDetails(auctionId)));
+    public ResponseEntity<ApiResponse<UpcomingProductDetailsDto>> getUpcomingAuctionProductDetails(
+        @PathVariable Long auctionId) {
+        return ResponseEntity.ok(
+            ApiResponse.onSuccess(productService.getUpcomingAuctionProductDetails(auctionId)));
     }
 
     @Operation(
-            summary = "마감된 경매 상품 상세 정보 조회 API",
-            description = "마감된 경매에 대한 상세 정보를 반환하는 API입니다.",
-            parameters = {
-                    @Parameter(name = "auctionId", description = "마감된 경매 식별자 ID", required = true)
-            },
-            responses = {
-                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
-                            responseCode = "COMMON200",
-                            description = "마감된 경매 물품 상세 정보 조회 결과",
-                            content = @Content(schema = @Schema(implementation = EndedAuctionProductDto.class))
-                    )
-            }
+        summary = "마감된 경매 상품 상세 정보 조회 API",
+        description = "마감된 경매에 대한 상세 정보를 반환하는 API입니다.",
+        parameters = {
+            @Parameter(name = "auctionId", description = "마감된 경매 식별자 ID", required = true)
+        },
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "COMMON200",
+                description = "마감된 경매 물품 상세 정보 조회 결과",
+                content = @Content(schema = @Schema(implementation = EndedAuctionProductDto.class))
+            )
+        }
     )
     @GetMapping("/ended/{auctionId}")
-    public ResponseEntity<ApiResponse<EndedProductDetailsDto>> getEndedAuctionProductDetails(@PathVariable Long auctionId,
-                                                                                             @AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(productService.getEndedAuctionDetails(auctionId, member)));
+    public ResponseEntity<ApiResponse<EndedProductDetailsDto>> getEndedAuctionProductDetails(
+        @PathVariable Long auctionId,
+        @AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(
+            ApiResponse.onSuccess(productService.getEndedAuctionDetails(auctionId, member)));
     }
 
+    @Operation(
+        summary = "진행 중인 경매 상품 상세 정보 조회 API",
+        description = "진행 중인 경매에 대한 상세 정보를 반환하는 API입니다.\n\n"
+            + "사용자 인증 필요합니다.",
+        parameters = {
+            @Parameter(name = "auctionId", description = "경매 식별자 ID", required = true)
+        },
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "COMMON200",
+                description = "진행 중인 경매 물품 상세 정보 조회 결과",
+                content = @Content(schema = @Schema(implementation = OngoingProductDetailsDto.class))
+            )
+        }
+    )
+    @GetMapping("/ongoing/{auctionId}")
+    public ResponseEntity<ApiResponse<OngoingProductDetailsDto>> getOngoingAuctionProductDetails(
+        @PathVariable Long auctionId, @AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(
+            ApiResponse.onSuccess(productService.getOngoingAuctionDetails(auctionId, member)));
+    }
 }
-
