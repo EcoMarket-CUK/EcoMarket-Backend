@@ -1,11 +1,12 @@
 package com.api.jaebichuri.auction.mapper;
 
 import com.api.jaebichuri.auction.dto.OngoingAuctionProductDto;
+import com.api.jaebichuri.auction.dto.ParticipationEndedAuctionResponseDto;
+import com.api.jaebichuri.auction.dto.ParticipationOngoingAuctionResponseDto;
 import com.api.jaebichuri.auction.dto.UpcomingAuctionProductDto;
 import com.api.jaebichuri.auction.entity.Auction;
 import com.api.jaebichuri.product.entity.AuctionProductImage;
 import com.api.jaebichuri.screening.dto.EndedAuctionProductDto;
-import com.api.jaebichuri.screening.entity.AuctionScreeningImage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -36,6 +37,25 @@ public interface AuctionMapper {
     @Mapping(source = "product.productDescription", target = "productDescription")
     @Mapping(target = "imageUrl", expression = "java(getRepresentativeImageUrl(auction.getProduct().getImages()))")
     EndedAuctionProductDto toEndedProductDto(Auction auction);
+
+    @Mapping(target = "imageUrl", expression = "java(getRepresentativeImageUrl(auction.getProduct().getImages()))")
+    @Mapping(source = "auction.auctionCategory", target = "auctionCategory")
+    @Mapping(source = "myBidPrice", target = "myBidPrice")
+    @Mapping(source = "auction.currentPrice", target = "topBidPrice")
+    @Mapping(source = "auction.product.productDescription", target = "productDescription")
+    @Mapping(source = "auction.product.productName", target = "productName")
+    @Mapping(source = "auction.product.id", target = "productId")
+    ParticipationOngoingAuctionResponseDto toParticipationOngoingAuctionResponseDto(Auction auction, Long myBidPrice);
+
+    @Mapping(source = "month", target = "month")
+    @Mapping(source = "isSuccessBid", target = "isSuccessBid")
+    @Mapping(target = "imageUrl", expression = "java(getRepresentativeImageUrl(auction.getProduct().getImages()))")
+    @Mapping(source = "myBidPrice", target = "myBidPrice")
+    @Mapping(source = "auction.currentPrice", target = "topBidPrice")
+    @Mapping(source = "auction.product.productDescription", target = "productDescription")
+    @Mapping(source = "auction.product.productName", target = "productName")
+    @Mapping(source = "auction.product.id", target = "productId")
+    ParticipationEndedAuctionResponseDto toParticipationEndedAuctionResponseDto(String month, Boolean isSuccessBid, Auction auction, Long myBidPrice);
 
     List<EndedAuctionProductDto> toEndedProductDtoList(List<Auction> auctions);
 
