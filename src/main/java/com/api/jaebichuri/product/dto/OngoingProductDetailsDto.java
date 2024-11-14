@@ -1,6 +1,8 @@
 package com.api.jaebichuri.product.dto;
 
 import static com.api.jaebichuri.bid.dto.AuctionBidHttpResponse.*;
+
+import com.api.jaebichuri.auction.enums.AuctionCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,6 +18,9 @@ public class OngoingProductDetailsDto {
 
     @Schema(description = "경매 식별자 ID", example = "1")
     private Long auctionId;
+
+    @Schema(description = "경매 카테고리", example = "CLOTHING")
+    private AuctionCategory auctionCategory;
 
     @Schema(description = "상품 사진 URL 목록")
     private List<String> images;

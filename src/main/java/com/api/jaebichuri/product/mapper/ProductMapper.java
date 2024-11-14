@@ -35,6 +35,7 @@ public interface ProductMapper {
 
     @Mapping(source = "auction.product.id", target = "productId")
     @Mapping(source = "auction.id", target = "auctionId")
+    @Mapping(source = "auction.auctionCategory", target = "auctionCategory")
     @Mapping(source = "auction.product.images", target = "images")
     @Mapping(source = "auction.product.productName", target = "productName")
     @Mapping(source = "auction.product.productDescription", target = "productDescription")
