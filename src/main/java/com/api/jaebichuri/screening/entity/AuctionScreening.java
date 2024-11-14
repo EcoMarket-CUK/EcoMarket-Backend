@@ -50,6 +50,7 @@ public class AuctionScreening extends BaseEntity {
     private Member seller;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "auction_screening_id")
     private List<AuctionScreeningImage> images = new ArrayList<>();
 
     public void updateSeller(Member seller) {

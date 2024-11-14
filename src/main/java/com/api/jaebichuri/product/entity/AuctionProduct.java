@@ -29,6 +29,7 @@ public class AuctionProduct {
     private Auction auction;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "auction_product_id")
     private List<AuctionProductImage> images = new ArrayList<>();
 
     public List<AuctionProductImage> getImages() {
