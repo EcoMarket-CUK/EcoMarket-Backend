@@ -101,6 +101,7 @@ public class AuctionController {
         summary = "(마이페이지) 내가 참여한 경매 목록 조회 API",
         description = "마이페이지에서 입찰 중인 물품 조회 or 이전 입찰 내역 조회 API입니다.\n\n"
             + "입찰 중인 물품 조회의 경우 파라미터에 ONGOING, 이전 입찰 내역 조회의 경우 ENDED로 넘겨주세요.\n\n"
+            + "이전 입찰 내역 조회에서 isSuccessBid가 true인 경우 낙찰, false인 경우 유찰입니다.\n\n"
             + "사용자 인증이 필요합니다.",
         parameters = {
             @Parameter(name = "auctionStatus", description = "경매 상태", required = true),
