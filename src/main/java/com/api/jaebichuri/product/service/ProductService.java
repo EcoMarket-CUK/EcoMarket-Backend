@@ -32,12 +32,8 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public EndedProductDetailsDto getEndedAuctionDetails(Long auctionId, Member member) {
-        Auction auction = auctionRepository.findById(auctionId)
+        Auction auction = auctionRepository.findByIdAndSeller(auctionId, member)
                 .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
-
-        if (!auction.getSeller().equals(member)) {
-            throw new CustomException(ErrorStatus._ACCESS_DENIED);
-        }
 
         EndedProductDetailsDto endedProductDetailsDto = productMapper.toEndedProductDetailsDto(auction);
 
