@@ -1,6 +1,7 @@
 package com.api.jaebichuri.bid.repository;
 
 import com.api.jaebichuri.auction.entity.Auction;
+import com.api.jaebichuri.auction.enums.AuctionStatus;
 import com.api.jaebichuri.bid.entity.AuctionBid;
 import com.api.jaebichuri.member.entity.Member;
 import java.time.LocalDateTime;
@@ -25,4 +26,8 @@ public interface AuctionBidRepository extends JpaRepository<AuctionBid, Long> {
     @Query("SELECT COUNT(ab) FROM AuctionBid ab WHERE ab.auction = :auction AND ab.createdAt >= :startOfDay AND ab.createdAt < :endOfDay")
     Long countByAuctionAndCreatedAtBetween(@Param("auction") Auction auction,
         @Param("startOfDay") LocalDateTime startOfDay, @Param("endOfDay") LocalDateTime endOfDay);
+
+    @Query("SELECT ab FROM AuctionBid ab WHERE ab.bidder = :bidder AND ab.auction.auctionStatus = :auctionStatus")
+    List<AuctionBid> findAllByBidderAndAuctionStatus(@Param("bidder") Member bidder,
+        @Param("auctionStatus") AuctionStatus auctionStatus);
 }

@@ -81,7 +81,12 @@ public class SecurityConfig {
                         .requestMatchers("/test/login").permitAll()
                         .requestMatchers("/oauth2/kakao/**").permitAll()
                         .requestMatchers("/ws").permitAll()
-                        .requestMatchers("/auctions/**", "/products/upcoming/**").permitAll()
+                        .requestMatchers("/products/upcoming/**").permitAll()
+                        .requestMatchers(
+                            "/auctions",
+                            "/auctions/ongoing",
+                            "/auctions/search"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.PUT, "/admin/{screeningId}/status").hasAuthority("ADMIN")
                         .anyRequest().hasAnyAuthority("USER", "ADMIN")
                 );
