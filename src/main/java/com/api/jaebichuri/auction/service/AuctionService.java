@@ -90,7 +90,7 @@ public class AuctionService {
         return createResponse(auctionStatus, auctionPriceMap, auctionDateMap);
     }
 
-    private static void updateMap(AuctionStatus auctionStatus, List<AuctionBid> auctionBidList,
+    private void updateMap(AuctionStatus auctionStatus, List<AuctionBid> auctionBidList,
         Map<Auction, Long> auctionPriceMap, Map<Auction, String> auctionDateMap) {
         auctionBidList.forEach(
             auctionBid -> {
