@@ -73,6 +73,7 @@ public class AuctionService {
         return auctionMapper.toOngoingProductDtoList(auctions);
     }
 
+    @Transactional(readOnly = true)
     public List<?> getParticipateAuction(Member member, AuctionStatus auctionStatus) {
         List<AuctionBid> auctionBidList = auctionBidRepository.findAllByBidderAndAuctionStatus(
             member, auctionStatus);
@@ -83,6 +84,14 @@ public class AuctionService {
 
         Map<Auction, Long> auctionPriceMap = new HashMap<>();
         Map<Auction, String> auctionDateMap = new HashMap<>();
+
+        updateMap(auctionStatus, auctionBidList, auctionPriceMap, auctionDateMap);
+
+        return createResponse(auctionStatus, auctionPriceMap, auctionDateMap);
+    }
+
+    private static void updateMap(AuctionStatus auctionStatus, List<AuctionBid> auctionBidList,
+        Map<Auction, Long> auctionPriceMap, Map<Auction, String> auctionDateMap) {
         auctionBidList.forEach(
             auctionBid -> {
                 Auction auction = auctionBid.getAuction();
@@ -103,8 +112,13 @@ public class AuctionService {
                 }
             }
         );
+    }
+
+    private List<Object> createResponse(AuctionStatus auctionStatus,
+        Map<Auction, Long> auctionPriceMap, Map<Auction, String> auctionDateMap) {
 
         List<Object> participateAuctionResponseDtoList = new ArrayList<>();
+
         auctionPriceMap.keySet()
             .forEach(auction -> {
                 if (auctionStatus == AuctionStatus.ONGOING) {
