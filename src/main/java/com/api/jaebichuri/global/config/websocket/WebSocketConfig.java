@@ -23,8 +23,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry
             .setErrorHandler(stompErrorHandler)
             .addEndpoint("/ws")
-            .setAllowedOriginPatterns("*")
-            .withSockJS();
+            .setAllowedOriginPatterns("*");
     }
 
     @Override
