@@ -1,5 +1,6 @@
 package com.api.jaebichuri.bid.dto;
 
+import com.api.jaebichuri.auction.enums.AuctionCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,6 +12,14 @@ import lombok.Getter;
 @Schema(description = "경매의 현재 값들을 반환하는 DTO")
 public class AuctionBidHttpResponse {
 
+    @Schema(description = "경매 카테고리", example = "CLOTHING")
+    private AuctionCategory auctionCategory;
+    @Schema(description = "상품명", example = "모자")
+    private String productName;
+    @Schema(description = "상품 설명", example = "모자에 대한 설명입니다.")
+    private String productDescription;
+    @Schema(description = "상품 사진")
+    private String imageUrl;
     @Schema(description = "시작가", example = "10000")
     private Long startBidPrice;
     @Schema(description = "현재 최고 입찰가", example = "30000")
