@@ -10,6 +10,8 @@ import com.api.jaebichuri.bid.dto.AuctionBidSocketResponse.AuctionBidderResponse
 import com.api.jaebichuri.bid.entity.AuctionBid;
 import com.api.jaebichuri.global.response.code.status.ErrorStatus;
 import com.api.jaebichuri.global.response.code.status.SuccessStatus;
+import com.api.jaebichuri.product.entity.AuctionProduct;
+import com.api.jaebichuri.product.entity.AuctionProductImage;
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,6 +19,10 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface AuctionBidMapper {
 
+    @Mapping(source = "auction.auctionCategory", target = "auctionCategory")
+    @Mapping(source = "product.productName", target = "productName")
+    @Mapping(source = "product.productDescription", target = "productDescription")
+    @Mapping(target = "imageUrl", expression = "java(getRepresentativeImageUrl(auction.getProduct().getImages()))")
     @Mapping(source = "auction.startPrice", target = "startBidPrice")
     @Mapping(source = "auction.endTime", target = "endTime")
     @Mapping(source = "auctionBid.bidPrice", target = "topBidPrice")
@@ -25,7 +31,7 @@ public interface AuctionBidMapper {
     @Mapping(source = "bidDatePriceResponseList", target = "top3BidDatePriceList")
     @Mapping(source = "bidVolumeResponseList", target = "bidVolumeResponseList")
     @Mapping(source = "memberId", target = "memberId")
-    AuctionBidHttpResponse toHttpResponse(Auction auction, AuctionBid auctionBid,
+    AuctionBidHttpResponse toHttpResponse(Auction auction, AuctionProduct product, AuctionBid auctionBid,
         Long canBidPrice, Long numOfBidders, List<BidDatePriceResponse> bidDatePriceResponseList,
         List<BidVolumeResponse> bidVolumeResponseList, Long memberId);
 
@@ -37,13 +43,17 @@ public interface AuctionBidMapper {
     @Mapping(source = "volume", target = "volume")
     BidVolumeResponse toBidVolumeResponse(String date, Long volume);
 
+    @Mapping(source = "auction.auctionCategory", target = "auctionCategory")
+    @Mapping(source = "product.productName", target = "productName")
+    @Mapping(source = "product.productDescription", target = "productDescription")
+    @Mapping(target = "imageUrl", expression = "java(getRepresentativeImageUrl(auction.getProduct().getImages()))")
     @Mapping(source = "auction.startPrice", target = "startBidPrice")
     @Mapping(source = "auction.startPrice", target = "canBidPrice")
     @Mapping(source = "auction.endTime", target = "endTime")
     @Mapping(constant = "0L", target = "topBidPrice")
     @Mapping(constant = "0L", target = "numOfBidders")
     @Mapping(source = "memberId", target = "memberId")
-    AuctionBidHttpResponse toHttpResponse(Auction auction, Long memberId);
+    AuctionBidHttpResponse toHttpResponse(Auction auction, AuctionProduct product, Long memberId);
 
     @Mapping(source = "topBidPrice", target = "topBidPrice")
     @Mapping(source = "canBidPrice", target = "canBidPrice")
@@ -76,5 +86,13 @@ public interface AuctionBidMapper {
 
     default String getSuccessCode() {
         return SuccessStatus._OK.getCode();
+    }
+
+    default String getRepresentativeImageUrl(List<AuctionProductImage> images) {
+        return images.stream()
+            .filter(AuctionProductImage::getIsRepresentative)
+            .map(AuctionProductImage::getImageUrl)
+            .findFirst()
+            .orElse(null);
     }
 }

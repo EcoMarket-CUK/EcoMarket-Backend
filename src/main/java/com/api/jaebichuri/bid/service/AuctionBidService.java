@@ -52,9 +52,9 @@ public class AuctionBidService {
         return auctionBidRepository.findTopByAuctionOrderByBidPriceDesc(auction)
             .map(topAuctionBid -> {
                 Long canBidPrice = calculateCanBidPrice(topAuctionBid.getBidPrice());
-                return auctionBidMapper.toHttpResponse(auction, topAuctionBid, canBidPrice,
+                return auctionBidMapper.toHttpResponse(auction, auction.getProduct(), topAuctionBid, canBidPrice,
                     numOfBidders, top3BidDatePriceList, bidVolumeResponseList, member.getId());
-            }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction, member.getId()));
+            }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction, auction.getProduct(), member.getId()));
     }
 
     @DistributedLock(key = "auctionId")
