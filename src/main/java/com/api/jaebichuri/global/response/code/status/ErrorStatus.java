@@ -33,12 +33,14 @@ public enum ErrorStatus {
     _MIN_IMAGES_REQUIRED(HttpStatus.BAD_REQUEST, "SCREENING401", "최소 1개 이상의 이미지를 업로드해야 합니다."),
     _MAX_IMAGES_EXCEEDED(HttpStatus.BAD_REQUEST, "SCREENING402", "최대 3개의 이미지만 업로드할 수 있습니다."),
     _SCREENING_NOT_FOUND(HttpStatus.NOT_FOUND, "SCREENING403", "해당 심사를 찾을 수 없습니다."),
+    _IMAGE_REQUIRED(HttpStatus.BAD_REQUEST, "SCREENING404", "상품 등록을 위해 이미지가 필요합니다."),
 
     // 입찰 관련 에러
     _AUCTION_BID_GET_LOCK_FAILED(HttpStatus.BAD_REQUEST, "AUCTIONBID400", "락획득에 실패하여 입찰에 실패했습니다."),
     _AUCTION_BID_BELOW_STARTING_PRICE(HttpStatus.BAD_REQUEST, "AUCTIONBID401", "시작 입찰가보다 낮은 가격에 입찰할 수 없습니다."),
     _AUCTION_BID_BELOW_MINIMUM_INCREMENT(HttpStatus.BAD_REQUEST, "AUCTIONBID402", "현재 최고 입찰가에서 10% 높은 가격에 입찰할 수 있습니다."),
     _AUCTION_BID_ALREADY_HIGHEST(HttpStatus.BAD_REQUEST, "AUCTIONBID403", "이미 최고 입찰가로 입찰 중입니다."),
+
     ;
 
     private final HttpStatus httpStatus;
