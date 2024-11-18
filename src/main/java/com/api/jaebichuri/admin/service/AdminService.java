@@ -14,10 +14,14 @@ import com.api.jaebichuri.product.repository.ProductRepository;
 import com.api.jaebichuri.screening.entity.AuctionScreening;
 import com.api.jaebichuri.screening.enums.AuctionScreeningStatus;
 import com.api.jaebichuri.screening.repository.ScreeningRepository;
+import com.api.jaebichuri.shipping.entity.Shipment;
+import com.api.jaebichuri.shipping.enums.ShippingStatus;
+import com.api.jaebichuri.shipping.repository.ShippingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,6 +34,7 @@ public class AdminService {
     private final ProductImageRepository productImageRepository;
     private final AuctionRepository auctionRepository;
     private final MemberRepository memberRepository;
+    private final ShippingRepository shippingRepository;
 
     @Transactional
     public String changeRole(Member member, Role newRole) {
@@ -58,6 +63,21 @@ public class AdminService {
         return "Auction screening status has been updated.";
     }
 
+    @Transactional
+    public String updateShipmentStatus(Long auctionId, ShippingStatus newStatus, String shippingCompany, String trackingNumber) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
+
+        Shipment shipment = findOrCreateShipment(auction, newStatus);
+        shipment.updateShippingStatus(newStatus);
+
+        handleStatusSpecificUpdates(shipment, newStatus, shippingCompany, trackingNumber);
+
+        shippingRepository.save(shipment);
+
+        return "Shipment status updated successfully.";
+    }
+
     private void moveToAuction(AuctionScreening screening) {
         AuctionProduct product = AuctionProduct.fromScreening(screening);
         productRepository.save(product);
@@ -69,6 +89,33 @@ public class AdminService {
 
         Auction auction = Auction.fromScreening(screening, product);
         auctionRepository.save(auction);
+    }
+
+    private Shipment findOrCreateShipment(Auction auction, ShippingStatus newStatus) {
+        return shippingRepository.findByAuction(auction)
+                .orElseGet(() -> {
+                    if (newStatus == ShippingStatus.PAYMENT_CONFIRMED) {
+                        Shipment newShipment = Shipment.builder()
+                                .auction(auction)
+                                .shippingStatus(newStatus)
+                                .build();
+
+                        shippingRepository.save(newShipment);
+                        return newShipment;
+                    } else {
+                        throw new CustomException(ErrorStatus._SHIPPING_NOT_FOUND);
+                    }
+                });
+    }
+
+    private void handleStatusSpecificUpdates(Shipment shipment, ShippingStatus newStatus, String shippingCompany, String trackingNumber) {
+        if (newStatus == ShippingStatus.SHIPPING) {
+            shipment.updateShippingCompany(shippingCompany);
+            shipment.updateTrackingNumber(trackingNumber);
+            shipment.updateShippingDate(LocalDateTime.now());
+        } else if (newStatus == ShippingStatus.DELIVERED) {
+            shipment.updateDeliveryDate(LocalDateTime.now());
+        }
     }
 
 }
