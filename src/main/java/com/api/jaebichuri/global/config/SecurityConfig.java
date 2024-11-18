@@ -80,7 +80,7 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/test/login").permitAll()
                         .requestMatchers("/oauth2/kakao/**").permitAll()
-                        .requestMatchers("/ws").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers("/products/upcoming/**").permitAll()
                         .requestMatchers(
                             "/auctions",
