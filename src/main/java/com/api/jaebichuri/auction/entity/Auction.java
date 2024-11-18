@@ -12,6 +12,7 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -56,8 +57,12 @@ public class Auction extends BaseEntity {
     private AuctionCategory auctionCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
     private Member seller;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "final_bidder_id")
+    private Member finalBidder;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_product_id", nullable = false)
@@ -77,7 +82,18 @@ public class Auction extends BaseEntity {
 
     public void endAuction() {
         this.auctionStatus = AuctionStatus.ENDED;
-        this.isBidSuccessful = (this.finalBidPrice != null);
+
+        if (!bids.isEmpty()) {
+            AuctionBid highestBid = bids.stream()
+                    .max(Comparator.comparing(AuctionBid::getBidPrice))
+                    .orElse(null);;
+
+            this.finalBidPrice = highestBid.getBidPrice();
+            this.finalBidder = highestBid.getBidder();
+            this.isBidSuccessful = (this.finalBidPrice != null);
+        } else {
+            this.isBidSuccessful = false;
+        }
     }
 
     public static Auction fromScreening(AuctionScreening screening, AuctionProduct product) {
