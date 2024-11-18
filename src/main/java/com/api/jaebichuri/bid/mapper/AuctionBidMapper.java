@@ -31,7 +31,8 @@ public interface AuctionBidMapper {
     @Mapping(source = "bidDatePriceResponseList", target = "top3BidDatePriceList")
     @Mapping(source = "bidVolumeResponseList", target = "bidVolumeResponseList")
     @Mapping(source = "memberId", target = "memberId")
-    AuctionBidHttpResponse toHttpResponse(Auction auction, AuctionProduct product, AuctionBid auctionBid,
+    AuctionBidHttpResponse toHttpResponse(Auction auction, AuctionProduct product,
+        AuctionBid auctionBid,
         Long canBidPrice, Long numOfBidders, List<BidDatePriceResponse> bidDatePriceResponseList,
         List<BidVolumeResponse> bidVolumeResponseList, Long memberId);
 
@@ -61,11 +62,12 @@ public interface AuctionBidMapper {
     @Mapping(source = "newBidderId", target = "newBidderId")
     @Mapping(source = "auctionId", target = "auctionId")
     @Mapping(source = "numOfBidders", target = "numOfBidders")
-    @Mapping(source = "bidVolumeResponse", target = "bidVolumeResponse")
-    @Mapping(source = "bidDatePriceResponse", target = "bidDatePriceResponse")
+    @Mapping(source = "top3BidDatePriceList", target = "top3BidDatePriceList")
+    @Mapping(source = "bidVolumeResponseList", target = "bidVolumeResponseList")
     AuctionBidSocketResponse toSocketResponse(Long topBidPrice, Long canBidPrice,
         Long previousBidderId, Long newBidderId, Long auctionId, Long numOfBidders,
-        BidVolumeResponse bidVolumeResponse, BidDatePriceResponse bidDatePriceResponse);
+        List<BidDatePriceResponse> top3BidDatePriceList,
+        List<BidVolumeResponse> bidVolumeResponseList);
 
     @Mapping(target = "isSuccess", constant = "true")
     @Mapping(target = "code", expression = "java(getSuccessCode())")
@@ -80,8 +82,8 @@ public interface AuctionBidMapper {
     @Mapping(source = "socketResponse.topBidPrice", target = "topBidPrice")
     @Mapping(source = "socketResponse.canBidPrice", target = "canBidPrice")
     @Mapping(source = "socketResponse.numOfBidders", target = "numOfBidders")
-    @Mapping(source = "socketResponse.bidVolumeResponse", target = "bidVolumeResponse")
-    @Mapping(source = "socketResponse.bidDatePriceResponse", target = "bidDatePriceResponse")
+    @Mapping(source = "socketResponse.top3BidDatePriceList", target = "top3BidDatePriceList")
+    @Mapping(source = "socketResponse.bidVolumeResponseList", target = "bidVolumeResponseList")
     AuctionBidSubscribersResponse toSubscribersResponse(AuctionBidSocketResponse socketResponse);
 
     default String getSuccessCode() {
