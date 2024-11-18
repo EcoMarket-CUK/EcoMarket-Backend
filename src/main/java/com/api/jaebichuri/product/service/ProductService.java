@@ -66,6 +66,6 @@ public class ProductService {
             ? auction.getSeller().getNickname() + "(나)" : auction.getSeller().getNickname();
 
         return productMapper.toOngoingProductDetailsDto(auction, sellerNickname, bidDatePriceResponseList,
-            volumeResponseList);
+            volumeResponseList, member.getId());
     }
 }

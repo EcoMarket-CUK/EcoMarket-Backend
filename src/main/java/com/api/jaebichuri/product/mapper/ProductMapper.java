@@ -33,6 +33,7 @@ public interface ProductMapper {
     @Mapping(source = "product.images", target = "images")
     EndedProductDetailsDto toEndedProductDetailsDto(Auction auction);
 
+    @Mapping(source = "memberId", target = "memberId")
     @Mapping(source = "auction.product.id", target = "productId")
     @Mapping(source = "auction.id", target = "auctionId")
     @Mapping(source = "auction.auctionCategory", target = "auctionCategory")
@@ -45,7 +46,7 @@ public interface ProductMapper {
     @Mapping(source = "top3BidDatePrice", target = "top3BidDatePrice")
     @Mapping(source = "bidVolumeByDate", target = "bidVolumeByDate")
     OngoingProductDetailsDto toOngoingProductDetailsDto(Auction auction, String sellerNickname,
-        List<BidDatePriceResponse> top3BidDatePrice, List<BidVolumeResponse> bidVolumeByDate);
+        List<BidDatePriceResponse> top3BidDatePrice, List<BidVolumeResponse> bidVolumeByDate, Long memberId);
 
     default List<String> filterRepresentativeImages(List<AuctionProductImage> images) {
         return images.stream()
