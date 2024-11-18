@@ -46,7 +46,7 @@ public class AuctionScreening extends BaseEntity {
     private AuctionCategory auctionCategory;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "seller_id", nullable = false)
     private Member seller;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
