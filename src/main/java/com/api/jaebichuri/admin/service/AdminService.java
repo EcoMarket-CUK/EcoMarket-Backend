@@ -68,12 +68,7 @@ public class AdminService {
         Auction auction = auctionRepository.findById(auctionId)
                 .orElseThrow(() -> new CustomException(ErrorStatus._AUCTION_NOT_FOUND));
 
-        Shipment shipment = findOrCreateShipment(auction, newStatus);
-        shipment.updateShippingStatus(newStatus);
-
-        handleStatusSpecificUpdates(shipment, newStatus, shippingCompany, trackingNumber);
-
-        shippingRepository.save(shipment);
+        handleStatusSpecificUpdates(auction, newStatus, shippingCompany, trackingNumber);
 
         return "Shipment status updated successfully.";
     }
@@ -108,7 +103,11 @@ public class AdminService {
                 });
     }
 
-    private void handleStatusSpecificUpdates(Shipment shipment, ShippingStatus newStatus, String shippingCompany, String trackingNumber) {
+    private void handleStatusSpecificUpdates(Auction auction, ShippingStatus newStatus, String shippingCompany, String trackingNumber) {
+        Shipment shipment = findOrCreateShipment(auction, newStatus);
+
+        shipment.updateShippingStatus(newStatus);
+
         if (newStatus == ShippingStatus.SHIPPING) {
             shipment.updateShippingCompany(shippingCompany);
             shipment.updateTrackingNumber(trackingNumber);
@@ -116,6 +115,8 @@ public class AdminService {
         } else if (newStatus == ShippingStatus.DELIVERED) {
             shipment.updateDeliveryDate(LocalDateTime.now());
         }
+
+        shippingRepository.save(shipment);
     }
 
 }
