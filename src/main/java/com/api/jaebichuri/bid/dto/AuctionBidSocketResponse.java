@@ -4,6 +4,7 @@ import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse.BidDatePriceResponse;
 import com.api.jaebichuri.bid.dto.AuctionBidHttpResponse.BidVolumeResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,8 +18,8 @@ public class AuctionBidSocketResponse {
     private Long newBidderId;
     private Long auctionId;
     private Integer numOfBidders;
-    private BidVolumeResponse bidVolumeResponse;// 오늘 거래량 volume
-    private BidDatePriceResponse bidDatePriceResponse; // 입찰 내역 하나 추가
+    private List<BidDatePriceResponse> top3BidDatePriceList;
+    private List<BidVolumeResponse> bidVolumeResponseList;
 
     @Getter
     @Builder
@@ -27,8 +28,8 @@ public class AuctionBidSocketResponse {
         private Long topBidPrice;
         private Long canBidPrice;
         private Integer numOfBidders;
-        private BidVolumeResponse bidVolumeResponse;// 오늘 거래량 volume
-        private BidDatePriceResponse bidDatePriceResponse; // 입찰 내역 하나 추가
+        private List<BidDatePriceResponse> top3BidDatePriceList;
+        private List<BidVolumeResponse> bidVolumeResponseList;
     }
 
     @Getter

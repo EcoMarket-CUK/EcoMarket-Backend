@@ -17,10 +17,8 @@ import com.api.jaebichuri.global.response.exception.CustomSocketException;
 import com.api.jaebichuri.member.entity.Member;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,18 +50,19 @@ public class AuctionBidService {
         return auctionBidRepository.findTopByAuctionOrderByBidPriceDesc(auction)
             .map(topAuctionBid -> {
                 Long canBidPrice = calculateCanBidPrice(topAuctionBid.getBidPrice());
-                return auctionBidMapper.toHttpResponse(auction, topAuctionBid, canBidPrice,
+                return auctionBidMapper.toHttpResponse(auction, auction.getProduct(), topAuctionBid,
+                    canBidPrice,
                     numOfBidders, top3BidDatePriceList, bidVolumeResponseList, member.getId());
-            }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction, member.getId()));
+            }).orElseGet(() -> auctionBidMapper.toHttpResponse(auction, auction.getProduct(),
+                member.getId()));
     }
 
     @DistributedLock(key = "auctionId")
     @Transactional
     public AuctionBidSocketResponse saveAuctionBid(Member member, Long auctionId,
         AuctionBidRequestDto requestDto) {
-        Auction auction = auctionRepository.findById(auctionId)
-            .orElseThrow(() -> new CustomSocketException(ErrorStatus._AUCTION_NOT_FOUND,
-                member.getId()));
+        Auction auction = auctionRepository.findById(auctionId).orElseThrow(
+            () -> new CustomSocketException(ErrorStatus._AUCTION_NOT_FOUND, member.getId()));
 
         Long requestBidPrice = requestDto.getBidPrice();
 
@@ -106,13 +105,17 @@ public class AuctionBidService {
                 Collectors.counting()
             ));
 
-        List<BidVolumeResponse> bidVolumeResponseList = new ArrayList<>();
-        volumeByDate.forEach((date, volume) -> {
-            BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(date,
-                volume);
-            bidVolumeResponseList.add(bidVolumeResponse);
-        });
-        return bidVolumeResponseList;
+        return volumeByDate.entrySet().stream()
+            .sorted((entry1, entry2) -> {
+                LocalDate date1 = LocalDate.parse(entry1.getKey(),
+                    DateTimeFormatter.ofPattern("MM/dd"));
+                LocalDate date2 = LocalDate.parse(entry2.getKey(),
+                    DateTimeFormatter.ofPattern("MM/dd"));
+                return date2.compareTo(date1);
+            })
+            .limit(10)
+            .map(entry -> auctionBidMapper.toBidVolumeResponse(entry.getKey(), entry.getValue()))
+            .toList();
     }
 
     private AuctionBidSocketResponse handleFirstAuctionBid(Member member, Auction auction,
@@ -128,18 +131,12 @@ public class AuctionBidService {
 
         Long responseCanBidPrice = calculateCanBidPrice(auctionBid.getBidPrice());
 
-        Long todayVolume = getTodayVolume(auction);
-
-        BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(getTodayFormat(),
-            todayVolume);
-
-        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(
-            getTodayFormat(), requestBidPrice);
+        List<BidVolumeResponse> volumeResponseList = getVolumeResponseList(auction);
+        List<BidDatePriceResponse> bidDatePriceResponseList = getBidDatePriceResponseList(auction);
 
         return auctionBidMapper.toSocketResponse(requestBidPrice, responseCanBidPrice,
             auctionBid.getBidder().getId(), member.getId(), auction.getId(),
-            auction.updateNumOfBidders().getNumOfBidders(), bidVolumeResponse,
-            bidDatePriceResponse);
+            auction.updateNumOfBidders().getNumOfBidders(), bidDatePriceResponseList, volumeResponseList);
     }
 
     private void validateAuctionBid(Member member, AuctionBid topAuctionBid, Long requestBidPrice) {
@@ -169,17 +166,12 @@ public class AuctionBidService {
         Long numOfParticipants = isNotNewBidder ? auction.getNumOfBidders()
             : auction.updateNumOfBidders().getNumOfBidders();
 
-        Long todayVolume = getTodayVolume(auction);
-
-        BidVolumeResponse bidVolumeResponse = auctionBidMapper.toBidVolumeResponse(getTodayFormat(),
-            todayVolume);
-
-        BidDatePriceResponse bidDatePriceResponse = auctionBidMapper.toBidDatePriceResponse(
-            getTodayFormat(), requestBidPrice);
+        List<BidVolumeResponse> volumeResponseList = getVolumeResponseList(auction);
+        List<BidDatePriceResponse> bidDatePriceResponseList = getBidDatePriceResponseList(auction);
 
         return auctionBidMapper.toSocketResponse(requestBidPrice, responseCanBidPrice,
-            previousTopAuctionBid.getBidder().getId(), member.getId(), auction.getId(), numOfParticipants,
-            bidVolumeResponse, bidDatePriceResponse);
+            previousTopAuctionBid.getBidder().getId(), member.getId(), auction.getId(),
+            numOfParticipants, bidDatePriceResponseList, volumeResponseList);
     }
 
     private Long calculateCanBidPrice(Long nowBestBidPrice) {
@@ -198,17 +190,5 @@ public class AuctionBidService {
             .build();
         auctionBidRepository.save(auctionBid);
         return auctionBid;
-    }
-
-    private Long getTodayVolume(Auction auction) {
-        LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN); // 오늘 자정
-        LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);   // 오늘의 마지막 순간
-
-        return auctionBidRepository.countByAuctionAndCreatedAtBetween(auction, startOfDay,
-            endOfDay);
-    }
-
-    private String getTodayFormat() {
-        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("MM/dd"));
     }
 }

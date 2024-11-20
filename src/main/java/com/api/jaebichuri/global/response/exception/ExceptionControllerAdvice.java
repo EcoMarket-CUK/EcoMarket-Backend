@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Slf4j
 @RestControllerAdvice
@@ -96,6 +97,13 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(ServletRequestBindingException.class)
     public ResponseEntity<ApiResponse<Object>> handleServletRequestBindingException(ServletRequestBindingException e) {
         ErrorStatus errorStatus = ErrorStatus._TOKEN_MISMATCH;
+        return ResponseEntity.status(errorStatus.getHttpStatus()).body(ApiResponse.onFailure(
+            errorStatus.getCode(), errorStatus.getMessage(), e.getMessage()));
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity<ApiResponse<Object>> handleMissingServletRequestPartException(MissingServletRequestPartException e) {
+        ErrorStatus errorStatus = ErrorStatus._IMAGE_REQUIRED;
         return ResponseEntity.status(errorStatus.getHttpStatus()).body(ApiResponse.onFailure(
             errorStatus.getCode(), errorStatus.getMessage(), e.getMessage()));
     }
