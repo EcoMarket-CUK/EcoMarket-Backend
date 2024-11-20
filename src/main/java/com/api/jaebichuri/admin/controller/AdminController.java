@@ -1,10 +1,11 @@
-package com.api.jaebichuri.admin.conroller;
+package com.api.jaebichuri.admin.controller;
 
 import com.api.jaebichuri.admin.service.AdminService;
 import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.entity.Member;
 import com.api.jaebichuri.member.enums.Role;
 import com.api.jaebichuri.screening.enums.AuctionScreeningStatus;
+import com.api.jaebichuri.shipping.enums.ShippingStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -55,10 +56,35 @@ public class AdminController {
                     )
             }
     )
-    @PutMapping("/{screeningId}/status")
+    @PutMapping("/{screeningId}/screening-status")
     public ResponseEntity<ApiResponse<String>> updateScreeningStatus(@PathVariable Long screeningId,
                                                                      @RequestParam AuctionScreeningStatus newStatus) {
         return ResponseEntity.ok(ApiResponse.onSuccess(adminService.updateScreeningStatus(screeningId, newStatus)));
+    }
+
+    @Operation(
+            summary = "배송 상태 변경 API",
+            description = "배송 상태를 변경하는 API입니다. 해당 API는 사용자 인증이 요구되며, admin 권한을 가진 사용자만 접근 가능합니다.",
+            parameters = {
+                    @Parameter(name = "auctionId", description = "경매 식별자 ID", required = true),
+                    @Parameter(name = "newStatus", description = "변경할 새로운 심사 상태", required = true),
+                    @Parameter(name = "shippingCompany", description = "택배사", required = false),
+                    @Parameter(name = "trackingNumber", description = "운송장 번호", required = false)
+            },
+            responses = {
+                    @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                            responseCode = "COMMON200",
+                            description = "배송 상태 변경 결과",
+                            content = @Content(schema = @Schema(implementation = String.class))
+                    )
+            }
+    )
+    @PutMapping("/{auctionId}/shipping-status")
+    public ResponseEntity<ApiResponse<String>> updateShipmentStatus(@PathVariable Long auctionId,
+                                                                    @RequestParam ShippingStatus newStatus,
+                                                                    @RequestParam(required = false) String shippingCompany,
+                                                                    @RequestParam(required = false) String trackingNumber) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(adminService.updateShipmentStatus(auctionId, newStatus, shippingCompany, trackingNumber)));
     }
 
 }

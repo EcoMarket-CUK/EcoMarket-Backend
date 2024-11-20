@@ -87,7 +87,8 @@ public class SecurityConfig {
                             "/auctions/ongoing",
                             "/auctions/search"
                         ).permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/admin/{screeningId}/status").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/admin/{screeningId}/screening-status").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/admin/{screeningId}/shipping-status").hasAuthority("ADMIN")
                         .anyRequest().hasAnyAuthority("USER", "ADMIN")
                 );
 
