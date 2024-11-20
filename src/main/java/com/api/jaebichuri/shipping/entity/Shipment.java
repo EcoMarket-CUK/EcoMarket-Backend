@@ -34,7 +34,7 @@ public class Shipment {
     @Column(nullable = true)
     private LocalDateTime deliveryDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id", nullable = false)
     private Auction auction;
 
