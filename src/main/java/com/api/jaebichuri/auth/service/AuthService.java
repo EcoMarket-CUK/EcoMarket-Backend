@@ -49,6 +49,7 @@ public class AuthService {
     private static final String JSON_ATTRIBUTE_NAME_ID = "id";
     private static final String JSON_ATTRIBUTE_NAME_PROPERTIES = "properties";
     private static final String JSON_ATTRIBUTE_NAME_NICKNAME = "nickname";
+    private static final String JSON_ATTRIBUTE_NAME_PROFILE_IMAGE = "profile_image";
 
     @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
     private String KAKAO_CLIENT_ID;
@@ -190,9 +191,13 @@ public class AuthService {
         String nickname = jsonNode.get(JSON_ATTRIBUTE_NAME_PROPERTIES)
             .get(JSON_ATTRIBUTE_NAME_NICKNAME).asText();
 
+        String profileImage = jsonNode.get(JSON_ATTRIBUTE_NAME_PROPERTIES)
+            .get(JSON_ATTRIBUTE_NAME_PROFILE_IMAGE).asText();
+
         HashMap<String, String> memberInfoMap = new HashMap<>();
         memberInfoMap.put(JSON_ATTRIBUTE_NAME_ID, clientId);
         memberInfoMap.put(JSON_ATTRIBUTE_NAME_NICKNAME, nickname);
+        memberInfoMap.put(JSON_ATTRIBUTE_NAME_PROFILE_IMAGE, profileImage);
 
         return memberInfoMap;
     }
