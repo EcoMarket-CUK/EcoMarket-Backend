@@ -23,6 +23,7 @@ public class MemberService {
 
     private static final String JSON_ATTRIBUTE_NAME_NICKNAME = "nickname";
     private static final String JSON_ATTRIBUTE_NAME_ID = "id";
+    private static final String JSON_ATTRIBUTE_NAME_PROFILE_IMAGE = "profile_image";
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final MemberRepository memberRepository;
@@ -32,6 +33,8 @@ public class MemberService {
     public LoginSuccessDto login(Map<String, String> memberInfo) {
         String clientId = memberInfo.get(JSON_ATTRIBUTE_NAME_ID);
         String kakaoProfileNickname = memberInfo.get(JSON_ATTRIBUTE_NAME_NICKNAME);
+        String kakaoProfileImage = memberInfo.get(JSON_ATTRIBUTE_NAME_PROFILE_IMAGE);
+
         String accessToken = jwtUtil.generateAccessToken(clientId);
         String refreshToken = jwtUtil.generateRefreshToken(clientId);
 
@@ -50,6 +53,7 @@ public class MemberService {
             // 최초 로그인이 아닌 사용자의 경우 카카오에서 사용하는 닉네임을 변경했을 가능성이 있기 때문에 로그인 시 업데이트 해준다.
             Member member = findMember.get();
             member.updateKakaoProfileNickname(kakaoProfileNickname);
+            member.updateKakaoProfileImage(kakaoProfileImage);
 
             // 추가 정보 입력한 사용자일 경우
             if (member.getName() != null) {
@@ -71,6 +75,7 @@ public class MemberService {
         Member member = Member.builder()
             .clientId(clientId)
             .kakaoProfileNickname(kakaoProfileNickname)
+            .kakaoProfileImage(kakaoProfileImage)
             .role(Role.USER)
             .build();
 

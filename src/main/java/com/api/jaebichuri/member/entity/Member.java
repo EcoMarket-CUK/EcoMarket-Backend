@@ -29,6 +29,8 @@ public class Member {
 
     private String kakaoProfileNickname;
 
+    private String kakaoProfileImage;
+
     private String name;
 
     private String nickname;
@@ -53,5 +55,9 @@ public class Member {
         this.nickname = nickname;
         this.zipCode= zipcode;
         this.address = address;
+    }
+
+    public void updateKakaoProfileImage(String kakaoProfileImage) {
+        this.kakaoProfileImage = kakaoProfileImage;
     }
 }
