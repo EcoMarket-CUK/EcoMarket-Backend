@@ -1,7 +1,7 @@
 package com.api.jaebichuri.shipping.mapper;
 
 import com.api.jaebichuri.product.entity.AuctionProductImage;
-import com.api.jaebichuri.shipping.dto.shippingDetailsDto;
+import com.api.jaebichuri.shipping.dto.ShippingDetailsDto;
 import com.api.jaebichuri.shipping.entity.Shipping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,9 +19,9 @@ public interface ShippingMapper {
     @Mapping(source = "auction.auctionCategory", target = "auctionCategory")
     @Mapping(source = "auction.finalBidPrice", target = "finalBidPrice")
     @Mapping(target = "imageUrl", expression = "java(getRepresentativeImageUrl(shipping.getAuction().getProduct().getImages()))")
-    shippingDetailsDto toShippingDetailsDto(Shipping shipping);
+    ShippingDetailsDto toShippingDetailsDto(Shipping shipping);
 
-    List<shippingDetailsDto> toShippingDetailsDtoList(List<Shipping> shippings);
+    List<ShippingDetailsDto> toShippingDetailsDtoList(List<Shipping> shippings);
 
     default String getRepresentativeImageUrl(List<AuctionProductImage> images) {
         return images.stream()

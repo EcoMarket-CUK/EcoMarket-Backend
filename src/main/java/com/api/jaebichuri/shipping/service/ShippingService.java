@@ -1,7 +1,7 @@
 package com.api.jaebichuri.shipping.service;
 
 import com.api.jaebichuri.member.entity.Member;
-import com.api.jaebichuri.shipping.dto.shippingDetailsDto;
+import com.api.jaebichuri.shipping.dto.ShippingDetailsDto;
 import com.api.jaebichuri.shipping.dto.ShippingStatusCountDto;
 import com.api.jaebichuri.shipping.entity.Shipping;
 import com.api.jaebichuri.shipping.enums.ShippingStatus;
@@ -31,7 +31,7 @@ public class ShippingService {
     }
 
     @Transactional(readOnly = true)
-    public List<shippingDetailsDto> getShippingDetails(Member member) {
+    public List<ShippingDetailsDto> getShippingDetails(Member member) {
         List<Shipping> shipping = shippingRepository.findByAuction_Seller(member);
 
         return shippingMapper.toShippingDetailsDtoList(shipping);
