@@ -23,6 +23,7 @@ public interface ProductMapper {
     @Mapping(source = "product.productName", target = "productName")
     @Mapping(source = "product.productDescription", target = "productDescription")
     @Mapping(source = "seller.nickname", target = "sellerNickname")
+    @Mapping(source = "seller.kakaoProfileImage", target = "sellerProfileImage")
     @Mapping(target = "images", expression = "java(filterRepresentativeImages(auction.getProduct().getImages()))")
     UpcomingProductDetailsDto auctionToUpcomingAuctionProductDto(Auction auction);
 
@@ -30,6 +31,7 @@ public interface ProductMapper {
     @Mapping(source = "product.productName", target = "productName")
     @Mapping(target = "productDescription", source = "product.productDescription")
     @Mapping(source = "seller.nickname", target = "sellerNickname")
+    @Mapping(source = "seller.kakaoProfileImage", target = "sellerProfileImage")
     @Mapping(source = "product.images", target = "images")
     EndedProductDetailsDto toEndedProductDetailsDto(Auction auction);
 
@@ -41,6 +43,7 @@ public interface ProductMapper {
     @Mapping(source = "auction.product.productName", target = "productName")
     @Mapping(source = "auction.product.productDescription", target = "productDescription")
     @Mapping(source = "sellerNickname", target = "sellerNickname")
+    @Mapping(source = "auction.seller.kakaoProfileImage", target = "sellerProfileImage")
     @Mapping(source = "auction.endTime", target = "endTime")
     @Mapping(source = "auction.numOfBidders", target = "numOfBidders")
     @Mapping(source = "top3BidDatePrice", target = "top3BidDatePrice")

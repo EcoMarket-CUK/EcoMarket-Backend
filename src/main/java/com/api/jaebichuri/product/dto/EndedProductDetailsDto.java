@@ -33,6 +33,9 @@ public class EndedProductDetailsDto {
     @Schema(description = "경매 등록자 닉네임", example = "에코마켓")
     private String sellerNickname;
 
+    @Schema(description = "경매 등록자 프로필 이미지 URL", example = "http://example.com/profile.jpg")
+    private String sellerProfileImage;
+
     @Schema(description = "상품 사진 URL 목록")
     private List<String> images;
 

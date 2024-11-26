@@ -14,7 +14,7 @@ import com.api.jaebichuri.product.repository.ProductRepository;
 import com.api.jaebichuri.screening.entity.AuctionScreening;
 import com.api.jaebichuri.screening.enums.AuctionScreeningStatus;
 import com.api.jaebichuri.screening.repository.ScreeningRepository;
-import com.api.jaebichuri.shipping.entity.Shipment;
+import com.api.jaebichuri.shipping.entity.Shipping;
 import com.api.jaebichuri.shipping.enums.ShippingStatus;
 import com.api.jaebichuri.shipping.repository.ShippingRepository;
 import lombok.RequiredArgsConstructor;
@@ -70,7 +70,7 @@ public class AdminService {
 
         handleStatusSpecificUpdates(auction, newStatus, shippingCompany, trackingNumber);
 
-        return "Shipment status updated successfully.";
+        return "shipping status updated successfully.";
     }
 
     private void moveToAuction(AuctionScreening screening) {
@@ -86,17 +86,17 @@ public class AdminService {
         auctionRepository.save(auction);
     }
 
-    private Shipment findOrCreateShipment(Auction auction, ShippingStatus newStatus) {
+    private Shipping findOrCreateShipment(Auction auction, ShippingStatus newStatus) {
         return shippingRepository.findByAuction(auction)
                 .orElseGet(() -> {
                     if (newStatus == ShippingStatus.PAYMENT_CONFIRMED) {
-                        Shipment newShipment = Shipment.builder()
+                        Shipping newshipping = Shipping.builder()
                                 .auction(auction)
                                 .shippingStatus(newStatus)
                                 .build();
 
-                        shippingRepository.save(newShipment);
-                        return newShipment;
+                        shippingRepository.save(newshipping);
+                        return newshipping;
                     } else {
                         throw new CustomException(ErrorStatus._SHIPPING_NOT_FOUND);
                     }
@@ -104,19 +104,19 @@ public class AdminService {
     }
 
     private void handleStatusSpecificUpdates(Auction auction, ShippingStatus newStatus, String shippingCompany, String trackingNumber) {
-        Shipment shipment = findOrCreateShipment(auction, newStatus);
+        Shipping shipping = findOrCreateShipment(auction, newStatus);
 
-        shipment.updateShippingStatus(newStatus);
+        shipping.updateShippingStatus(newStatus);
 
         if (newStatus == ShippingStatus.SHIPPING) {
-            shipment.updateShippingCompany(shippingCompany);
-            shipment.updateTrackingNumber(trackingNumber);
-            shipment.updateShippingDate(LocalDateTime.now());
+            shipping.updateShippingCompany(shippingCompany);
+            shipping.updateTrackingNumber(trackingNumber);
+            shipping.updateShippingDate(LocalDateTime.now());
         } else if (newStatus == ShippingStatus.DELIVERED) {
-            shipment.updateDeliveryDate(LocalDateTime.now());
+            shipping.updateDeliveryDate(LocalDateTime.now());
         }
 
-        shippingRepository.save(shipment);
+        shippingRepository.save(shipping);
     }
 
 }

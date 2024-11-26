@@ -2,7 +2,7 @@ package com.api.jaebichuri.shipping.controller;
 
 import com.api.jaebichuri.global.response.ApiResponse;
 import com.api.jaebichuri.member.entity.Member;
-import com.api.jaebichuri.shipping.dto.ShipmentDetailsDto;
+import com.api.jaebichuri.shipping.dto.ShippingDetailsDto;
 import com.api.jaebichuri.shipping.dto.ShippingStatusCountDto;
 import com.api.jaebichuri.shipping.service.ShippingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,13 +50,13 @@ public class ShippingController {
                     @io.swagger.v3.oas.annotations.responses.ApiResponse(
                             responseCode = "COMMON200",
                             description = "배송 중인 물품 정보 조회 결과",
-                            content = @Content(schema = @Schema(implementation = ShipmentDetailsDto.class))
+                            content = @Content(schema = @Schema(implementation = ShippingDetailsDto.class))
                     )
             }
     )
     @GetMapping("/details")
-    public ResponseEntity<ApiResponse<List<ShipmentDetailsDto>>> getShipmentsDetails(@AuthenticationPrincipal Member member) {
-        return ResponseEntity.ok(ApiResponse.onSuccess(shippingService.getShipmentsDetails(member)));
+    public ResponseEntity<ApiResponse<List<ShippingDetailsDto>>> getShippingDetails(@AuthenticationPrincipal Member member) {
+        return ResponseEntity.ok(ApiResponse.onSuccess(shippingService.getShippingDetails(member)));
     }
 
 }

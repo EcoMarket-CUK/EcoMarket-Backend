@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(description = "배송 중인 물품 조회에 대한 정보 DTO")
-public class ShipmentDetailsDto {
+public class ShippingDetailsDto {
 
     @Schema(description = "배송 식별자 ID", example = "1")
     private Long shippingId;
@@ -25,6 +25,12 @@ public class ShipmentDetailsDto {
 
     @Schema(description = "배송 상태", example = "SHIPPING")
     private ShippingStatus shippingStatus;
+
+    @Schema(description = "택배사", example = "우체국 택배")
+    private String shippingCompany;
+
+    @Schema(description = "송장 번호", example = "12356515")
+    private String trackingNumber;
 
     @Schema(description = "최종 낙찰가", example = "50000")
     private Long finalBidPrice;
