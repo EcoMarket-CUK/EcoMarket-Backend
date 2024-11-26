@@ -34,6 +34,7 @@ public class AuthController {
     private final MemberService memberService;
 
     private final static String LOGIN_SUCCESS_REDIRECT_URL = "https://ecomarket-cuk.netlify.app";
+    private final static String LOGIN_SUCCESS_REDIRECT_URL_LOCAL = "http://localhost:5173";
 
     @Operation(
         summary = "카카오 로그인 페이지로 리다이렉트 API",
@@ -58,7 +59,7 @@ public class AuthController {
         LoginSuccessDto loginSuccessDto = memberService.login(memberInfo);
 
         String redirectUrl =
-            LOGIN_SUCCESS_REDIRECT_URL + "?isFirstLogin=" + loginSuccessDto.getIsFirstLogin()
+            LOGIN_SUCCESS_REDIRECT_URL_LOCAL + "?isFirstLogin=" + loginSuccessDto.getIsFirstLogin()
                 + "&accessToken=" + loginSuccessDto.getTokenResponseDto().getAccessToken()
                 + "&refreshToken=" + loginSuccessDto.getTokenResponseDto().getRefreshToken();
 
