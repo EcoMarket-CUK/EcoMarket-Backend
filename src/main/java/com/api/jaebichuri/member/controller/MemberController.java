@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(
-        summary = "사용자 추가 정보 입력 API",
+        summary = "사용자 추가 정보 입력 or 수정 API",
         description = "로그인 이후 사용자의 추가 정보를 입력 받는 API입니다. 해당 API는 사용자 인증이 요구됩니다.",
         responses = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
@@ -39,7 +40,7 @@ public class MemberController {
             )
         }
     )
-    @PostMapping("/info")
+    @PutMapping("/info")
     public ResponseEntity<ApiResponse<String>> saveMemberInfo(@AuthenticationPrincipal Member member,
         @Parameter(name = "memberInfoRequestDto", description = "사용자 추가 정보 입력 DTO", required = true)
         @Valid @RequestBody MemberInfoRequestDto memberInfoRequestDto) {
