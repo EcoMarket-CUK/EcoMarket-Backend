@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(description = "배송 중인 물품 조회에 대한 정보 DTO")
-public class ShipmentDetailsDto {
+public class shippingDetailsDto {
 
     @Schema(description = "배송 식별자 ID", example = "1")
     private Long shippingId;
