@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,8 +33,7 @@ public class AuthController {
     private final AuthService authService;
     private final MemberService memberService;
 
-    @Value("${redirect.url}")
-    private String redirectBaseUrl;
+    private final static String LOGIN_SUCCESS_REDIRECT_URL = "https://ecomarket-cuk.netlify.app";
 
     @Operation(
         summary = "카카오 로그인 페이지로 리다이렉트 API",
@@ -59,9 +57,10 @@ public class AuthController {
         Map<String, String> memberInfo = authService.getMemberInfo(code);
         LoginSuccessDto loginSuccessDto = memberService.login(memberInfo);
 
-        String redirectUrl = redirectBaseUrl + "?isFirstLogin=" + loginSuccessDto.getIsFirstLogin()
-            + "&accessToken=" + loginSuccessDto.getTokenResponseDto().getAccessToken()
-            + "&refreshToken=" + loginSuccessDto.getTokenResponseDto().getRefreshToken();
+        String redirectUrl =
+            LOGIN_SUCCESS_REDIRECT_URL + "?isFirstLogin=" + loginSuccessDto.getIsFirstLogin()
+                + "&accessToken=" + loginSuccessDto.getTokenResponseDto().getAccessToken()
+                + "&refreshToken=" + loginSuccessDto.getTokenResponseDto().getRefreshToken();
 
         response.sendRedirect(redirectUrl);
     }
@@ -102,6 +101,7 @@ public class AuthController {
 
 
     private final JwtUtil jwtUtil;
+
     @Deprecated
     @GetMapping("/test/login")
     public ResponseEntity<ApiResponse<String>> getTestAccessToken(@RequestParam String clientId) {
