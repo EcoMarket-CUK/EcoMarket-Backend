@@ -13,4 +13,7 @@ public interface ScreeningRepository extends JpaRepository<AuctionScreening, Lon
 
     List<AuctionScreening> findAllBySeller(Member member);
 
+    boolean existsBySellerAndScreeningStatusNot(Member member,
+        AuctionScreeningStatus auctionScreeningStatus);
+
 }

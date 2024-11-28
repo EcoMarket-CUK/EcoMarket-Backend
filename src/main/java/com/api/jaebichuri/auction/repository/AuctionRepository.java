@@ -34,4 +34,9 @@ public interface AuctionRepository extends JpaRepository<Auction, Long> {
 
     Optional<Auction> findByIdAndSeller(Long auctionId, Member member);
 
+    boolean existsBySellerAndAuctionStatusNot(Member member, AuctionStatus auctionStatus);
+
+    List<Auction> findAllByAuctionStatusNot(AuctionStatus auctionStatus);
+
+    List<Auction> findAllByFinalBidder(Member member);
 }

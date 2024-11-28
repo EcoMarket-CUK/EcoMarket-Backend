@@ -44,6 +44,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private boolean isDeleted;
+
     public void updateKakaoProfileNickname(String name) {
         this.kakaoProfileNickname = name;
     }
@@ -59,5 +61,12 @@ public class Member {
 
     public void updateKakaoProfileImage(String kakaoProfileImage) {
         this.kakaoProfileImage = kakaoProfileImage;
+    }
+
+    public void softDelete() {
+        this.name = "탈퇴 회원(name" + this.id + ")";
+        this.nickname = "탈퇴 회원(nickname" + this.id + ")";
+        this.clientId = "탈퇴 회원(clientId" + this.id + ")";
+        this.isDeleted = true;
     }
 }
