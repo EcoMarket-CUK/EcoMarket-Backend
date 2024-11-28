@@ -38,6 +38,10 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
     private final MemberMapper memberMapper;
+    private final AuctionRepository auctionRepository;
+    private final ShippingRepository shippingRepository;
+    private final AuctionBidRepository auctionBidRepository;
+    private final ScreeningRepository screeningRepository;
 
     public LoginSuccessDto login(Map<String, String> memberInfo) {
         String clientId = memberInfo.get(JSON_ATTRIBUTE_NAME_ID);
@@ -109,11 +113,6 @@ public class MemberService {
     public MemberInfoResponseDTO getMemberInfo(Member member) {
         return memberMapper.toMemberInfoResponseDTO(member);
     }
-
-    private final AuctionRepository auctionRepository;
-    private final ShippingRepository shippingRepository;
-    private final AuctionBidRepository auctionBidRepository;
-    private final ScreeningRepository screeningRepository;
 
     public void withdraw(Member member) {
         // 탈퇴하려는 멤버의 Upcoming or Ongoing인 Auction이 존재하는지 조회
