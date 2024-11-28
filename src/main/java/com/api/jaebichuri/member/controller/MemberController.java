@@ -68,6 +68,17 @@ public class MemberController {
         return ResponseEntity.ok(ApiResponse.onSuccess(memberService.getMemberInfo(member)));
     }
 
+    @Operation(
+        summary = "회원 탈퇴 API",
+        description = "회원 탈퇴 API입니다. 해당 API는 사용자 인증이 요구됩니다.",
+        responses = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                responseCode = "COMMON200",
+                description = "회원 탈퇴 결과를 반환",
+                content = @Content(schema = @Schema(implementation = String.class))
+            )
+        }
+    )
     @PostMapping("/withdraw")
     public ResponseEntity<ApiResponse<String>> withdraw(@AuthenticationPrincipal Member member) {
         memberService.withdraw(member);
