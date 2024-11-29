@@ -42,7 +42,15 @@ public enum ErrorStatus {
     _AUCTION_BID_ALREADY_HIGHEST(HttpStatus.BAD_REQUEST, "AUCTIONBID403", "이미 최고 입찰가로 입찰 중입니다."),
 
     // 배송 관련 에러
-    _SHIPPING_NOT_FOUND(HttpStatus.BAD_REQUEST, "SHIPPING400", "해당 배송 정보를 찾을 수 없습니다.")
+    _SHIPPING_NOT_FOUND(HttpStatus.BAD_REQUEST, "SHIPPING400", "해당 배송 정보를 찾을 수 없습니다."),
+
+    //
+    _WITHDRAW_CANNOT_CUZ_1(HttpStatus.BAD_REQUEST, "WITHDRAW400", "Upcoming or Ongoing인 Auction이 존재하는 사용자는 회원 탈퇴 불가"),
+    _WITHDRAW_CANNOT_CUZ_2(HttpStatus.BAD_REQUEST, "WITHDRAW401", "ShippingStatus가 DELIVERED가 아닌게 하나라도 있으면 탈퇴 불가"),
+    _WITHDRAW_CANNOT_CUZ_3(HttpStatus.BAD_REQUEST, "WITHDRAW402", "멤버가 최고가로 입찰 중인 물품 존재해서 회원 탈퇴 불가"),
+    _WITHDRAW_CANNOT_CUZ_4(HttpStatus.BAD_REQUEST, "WITHDRAW403", "입찰에 성공한 물품이 아직 배송 완료되지 않아서 회원 탈퇴 불가"),
+    _WITHDRAW_CANNOT_CUZ_5(HttpStatus.BAD_REQUEST, "WITHDRAW404", "심사 단계의 경매가 있는 경우 회원 탈퇴 불가"),
+
     ;
 
     private final HttpStatus httpStatus;
