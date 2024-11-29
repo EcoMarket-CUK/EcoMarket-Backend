@@ -116,43 +116,27 @@ public class MemberService {
 
     public void withdraw(Member member) {
         // 탈퇴하려는 멤버의 Upcoming or Ongoing인 Auction이 존재하는지 조회
-        if (auctionRepository.existsBySellerAndAuctionStatusNot(member, AuctionStatus.ENDED)) {
+        if (hasUpcomingOrOngoingAuction(member)) {
             throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_1);
         }
 
         // Ended인 Auction의 Shipping의 ShippingStatus가 DELIVERED가 아닌게 하나라도 있으면 탈퇴 불가
-        shippingRepository.findByAuction_Seller(member).stream()
-            .filter(shipping -> !ShippingStatus.DELIVERED.equals(shipping.getShippingStatus()))
-            .findFirst()
-            .ifPresent(shipping -> {
-                throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_2);
-            });
+        if (hasUndeliveredShippingForEndedAuction(member)) {
+            throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_2);
+        }
 
-        // 멤버가 최고가로 입찰 중인 auction이 없는지 확인
-        auctionRepository.findAllByAuctionStatusNot(AuctionStatus.UPCOMING).stream()
-            .map(auction -> auctionBidRepository.findTopByAuctionOrderByBidPriceDesc(auction))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .filter(auctionBid -> auctionBid.getBidder().getId().equals(member.getId()))
-            .findFirst()
-            .ifPresent(auctionBid -> {
-                throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_3);
-            });
+        // 멤버가 최고가로 입찰 중인 auction이 있는지 확인
+        if (hasTopAuctionBidForOngoingOrEndedAuction(member)) {
+            throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_3);
+        }
 
         // 내가 입찰에 성공한 물품이 아직 배송 완료되지 않았을 경우
-        auctionRepository.findAllByFinalBidder(member).stream()
-            .map(auction -> shippingRepository.findByAuction(auction))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .filter(shipping -> !ShippingStatus.DELIVERED.equals(shipping.getShippingStatus()))
-            .findFirst()
-            .ifPresent(shipping -> {
-                throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_4);
-            });
+        if (hasUndeliveredShippingForWinningAuction(member)) {
+            throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_4);
+        }
 
         // REJECT를 제외한 AuctionScreening이 있는 경우
-        if (screeningRepository.existsBySellerAndScreeningStatusNot(member,
-            AuctionScreeningStatus.REJECTED)) {
+        if (hasNonRejectedAuctionScreening(member)) {
             throw new CustomException(ErrorStatus._WITHDRAW_CANNOT_CUZ_5);
         }
 
@@ -161,5 +145,35 @@ public class MemberService {
             () -> new CustomException(ErrorStatus._MEMBER_NOT_FOUND)
         );
         findMember.softDelete();
+    }
+
+    private boolean hasUpcomingOrOngoingAuction(Member member) {
+        return auctionRepository.existsBySellerAndAuctionStatusNot(member, AuctionStatus.ENDED);
+    }
+
+    private boolean hasUndeliveredShippingForEndedAuction(Member member) {
+        return shippingRepository.findByAuction_Seller(member).stream()
+            .anyMatch(shipping -> !ShippingStatus.DELIVERED.equals(shipping.getShippingStatus()));
+    }
+
+    private boolean hasTopAuctionBidForOngoingOrEndedAuction(Member member) {
+        return auctionRepository.findAllByAuctionStatusNot(AuctionStatus.UPCOMING).stream()
+            .map(auction -> auctionBidRepository.findTopByAuctionOrderByBidPriceDesc(auction))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .anyMatch(auctionBid -> auctionBid.getBidder().getId().equals(member.getId()));
+    }
+
+    private boolean hasUndeliveredShippingForWinningAuction(Member member) {
+        return auctionRepository.findAllByFinalBidder(member).stream()
+            .map(auction -> shippingRepository.findByAuction(auction))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .anyMatch(shipping -> !ShippingStatus.DELIVERED.equals(shipping.getShippingStatus()));
+    }
+
+    private boolean hasNonRejectedAuctionScreening(Member member) {
+        return screeningRepository.existsBySellerAndScreeningStatusNot(member,
+            AuctionScreeningStatus.REJECTED);
     }
 }
